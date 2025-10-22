@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+.grid-column{
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+}
+
+.animating-element{
+    transform: scale(1, 0);
+    transform-origin: center top;
+    transition: transform 350ms ease-in-out;
+}
+
+.animating-element.animate{
+    transform: scale(1, 1);
+}
+
+.animating-button{
+    transform: translateY(-50%);
+    transition: transform 400ms ease-in-out, background 350ms cubic-bezier(0.455, 0.03, 0.515, 0.955), color 400ms ease-in, outline 350ms ease-in-out, outline-color 350ms ease-in-out;
+}
+
+.animating-button.animate-down{
+    transform: translateY(0);
+}
+
+.grid-image{
+    grid-row-start: 1;
+    grid-column-start: 1;
+}
+
+.image{
+    opacity: 0;
+    width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+    transition: opacity 350ms ease-in-out;
+    margin: 0 auto;
+}
+
+.image.show{
+    opacity: 1;
+}
+
+.item{
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 450ms ease-in-out, visibility 10ms 450ms ease-in;
+}
+
+.item.show{
+    transition-delay: 0s;
+    visibility: visible;
+    opacity: 1;
+}
