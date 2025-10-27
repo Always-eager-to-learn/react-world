@@ -1,6 +1,6 @@
 import Header from "../components/Header"
 import Aside from "../components/home/Aside"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Outlet, useMatches } from "react-router-dom"
 import { useMediaQuery } from "react-responsive"
 import clsx from "clsx"
@@ -10,7 +10,12 @@ const Home = () => {
   function changeStatus(value: boolean) {
     setLeftAsideOpen(value)
   }
+
   const [leftAsideOpen, setLeftAsideOpen] = useState(true)
+  const tabSize = useMediaQuery({
+    query: "(min-width: 40.625rem) and (max-width:66.25rem)",
+  })
+
   const fullSize = useMediaQuery({
     query: "(min-width: 84.375rem)",
   })
@@ -20,10 +25,16 @@ const Home = () => {
   const smallSize = useMediaQuery({
     query: "(min-width: 66.25rem)",
   })
+
   const gridCols = clsx({
-    "grid-cols-[14rem_1fr]": smallSize,
-    "grid-cols-[15.7rem_1fr]": mediumSize,
-    "grid-cols-[17.7rem_1fr]": fullSize,
+    "grid-cols-[14rem_6fr]": smallSize,
+    "grid-cols-[15.7rem_6fr]": mediumSize,
+    "grid-cols-[17.7rem_6fr]": fullSize,
+  })
+  const gridStatusStyles = clsx({
+    [gridCols]: leftAsideOpen && !tabSize,
+    "grid-cols-[4.65rem_6fr]": !leftAsideOpen && !tabSize,
+    "grid-cols-[4.65rem_13rem_6fr]": tabSize,
   })
   const matches = useMatches()
   const matchingArray = matches.find((match) => match?.handle)
@@ -31,13 +42,32 @@ const Home = () => {
   const textToShow = handle?.title ? handle?.title : "React World"
   const iconToShow = handle?.icon ?? "vector-square"
 
+  useEffect(() => {
+    if (tabSize) {
+      setLeftAsideOpen(false)
+    } else if (!tabSize) {
+      setLeftAsideOpen(true)
+    }
+  }, [tabSize])
+
   return (
     <section
-      className={`grid ${leftAsideOpen ? gridCols : "grid-cols-[4.65rem_6fr]"} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-600 ease-in-out`}
+      className={`grid ${gridStatusStyles} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-1000 ease-in-out`}
     >
-      <Header text={textToShow} home iconName={iconToShow} />
-      <Aside isExpanded={leftAsideOpen} stateSetterFunction={changeStatus} />
-      <main className="row-start-2 col-start-2 grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll">
+      <Header
+        text={textToShow}
+        home
+        iconName={iconToShow}
+        tabDesign={tabSize}
+      />
+      <Aside
+        isExpanded={leftAsideOpen}
+        stateSetterFunction={changeStatus}
+        tabDesign={tabSize}
+      />
+      <main
+        className={`row-start-2 col-start-2 ${tabSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll`}
+      >
         <Outlet />
       </main>
     </section>

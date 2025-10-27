@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react"
+import { Code } from "lucide-react"
 
 interface Props {
   shouldDisplayText?: boolean
@@ -12,7 +12,7 @@ const ViewSourceButton = ({ shouldDisplayText = false }: Props) => {
       target="_blank"
     >
       {shouldDisplayText ? <p className="text-base">View Source Code</p> : null}
-      <Heart size={28} />
+      <Code size={28} />
     </a>
   )
 }

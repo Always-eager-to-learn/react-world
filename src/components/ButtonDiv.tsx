@@ -1,5 +1,5 @@
 import { nanoid } from "@sitnik/nanoid"
-import type { JSX } from "react"
+import { useState, type JSX, useEffect } from "react"
 
 interface Props {
   design: "open" | "close"
@@ -7,6 +7,7 @@ interface Props {
 }
 
 const ButtonDiv = ({ design, onClickEvent }: Props) => {
+  const [showButton, setShowButton] = useState(false)
   let jsxElements: JSX.Element[] = []
   if (design === "open") {
     jsxElements = Array(3)
@@ -34,9 +35,19 @@ const ButtonDiv = ({ design, onClickEvent }: Props) => {
     )
   }
 
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setShowButton(true)
+    }, 700)
+
+    return () => {
+      clearTimeout(timerId)
+    }
+  }, [])
+
   return (
     <button
-      className={`w-12 ${design === "open" ? `flex flex-col gap-1.5 justify-center justify-self-center` : `grid items-center justify-self-end`} p-2 h-12 outline-[3px] outline-transparent bg-transparent group hover:bg-[#131F53] focus-visible:outline-[#131F53] active:scale-90 [transition:background-color_300ms_ease-in-out,transform_250ms_ease-out,outline-color_300ms_ease-in-out] rounded-2xl`}
+      className={`row-start-1 w-12 ${design === "open" ? `flex flex-col gap-1.5 justify-center justify-self-center` : `grid items-center justify-self-end`} p-2 h-12 outline-[3px] outline-transparent bg-transparent group hover:bg-[#131F53] focus-visible:outline-[#131F53] active:scale-90 [transition:background-color_300ms_ease-in-out,transform_250ms_ease-out,outline-color_300ms_ease-in-out,opacity_200ms_ease-in-out] rounded-2xl ${showButton ? `opacity-100` : `opacity-0`}`}
       onClick={onClickEvent}
     >
       {jsxElements}

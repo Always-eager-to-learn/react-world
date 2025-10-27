@@ -10,9 +10,16 @@ interface Props {
   backButton?: boolean
   home?: boolean
   iconName?: IconsType
+  tabDesign?: boolean
 }
 
-const Header = ({ text, backButton, home = false, iconName }: Props) => {
+const Header = ({
+  text,
+  backButton,
+  home = false,
+  iconName,
+  tabDesign,
+}: Props) => {
   const containerStyles = clsx({
     flex: !backButton,
     "justify-center": !backButton,
@@ -20,6 +27,9 @@ const Header = ({ text, backButton, home = false, iconName }: Props) => {
     "grid-cols-[100px_1fr_1fr]": backButton,
     "bg-[#264A91]": true,
     "py-3": true,
+    "col-start-2": true,
+    "row-start-1": true,
+    "col-end-4": tabDesign,
   })
 
   const elementStyles = clsx({
