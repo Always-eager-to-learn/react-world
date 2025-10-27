@@ -44,7 +44,7 @@ const ProfileItem = ({ data, shouldShow } : Props) => {
                 {showItems}
             </section>
            
-            <section className="col-start-2 sm:row-start-7 max-sm:row-start-5 sm:justify-self-center max-sm:col-span-2 max-sm:justify-self-end">
+            <section className="col-start-2 sm:row-start-7 max-sm:row-start-8 sm:justify-self-center max-sm:col-span-2 max-sm:justify-self-end">
                 {data.availableforFreelance ? 
                     <button className="bg-[#340768] text-[#f4f4f4] py-3 px-5 rounded-3xl cursor-pointer outline-2 outline-transparent transition-[outline-color, background-color, color, transform] duration-200 ease-out hover:bg-[#e6e6e6] hover:text-[#340768] hover:outline-[#5b07a9] active:scale-90">Hire {data.name}</button> : 
                     <section className="font-medium text-lg">
