@@ -36,7 +36,7 @@ const ButtonDiv = ({ design, onClickEvent }: Props) => {
 
   return (
     <button
-      className={`justify-self-end w-12 ${design === "open" ? `flex flex-col gap-1.5 justify-center` : `grid items-center`} p-2 h-12 outline-[3px] outline-transparent bg-transparent group hover:bg-[#131F53] focus-visible:outline-[#131F53] active:scale-95 transition-[background-color, transform, outline-color] duration-200 ease-out rounded-2xl`}
+      className={`w-12 ${design === "open" ? `flex flex-col gap-1.5 justify-center justify-self-center` : `grid items-center justify-self-end`} p-2 h-12 outline-[3px] outline-transparent bg-transparent group hover:bg-[#131F53] focus-visible:outline-[#131F53] active:scale-90 [transition:background-color_300ms_ease-in-out,transform_250ms_ease-out,outline-color_300ms_ease-in-out] rounded-2xl`}
       onClick={onClickEvent}
     >
       {jsxElements}

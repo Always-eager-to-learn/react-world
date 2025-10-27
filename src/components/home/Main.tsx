@@ -16,11 +16,7 @@ const Main = () => {
     )
   })
 
-  return (
-    <main className="row-start-2 col-start-2 grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll">
-      {jsxElements}
-    </main>
-  )
+  return <>{jsxElements}</>
 }
 
 export default memo(Main)

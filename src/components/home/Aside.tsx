@@ -9,7 +9,7 @@ interface Props {
 const Aside = ({ isExpanded, stateSetterFunction }: Props) => {
   return (
     <section
-      className={`row-start-2 col-start-1 h-full bg-[#B4D4EF] grid px-4 py-3.5 auto-rows-max transition-transform duration-500 ease-in-out`}
+      className={`row-start-1 row-end-3 col-start-1 h-full bg-[#B4D4EF] flex flex-col justify-between gap-4 px-2 py-3.5`}
     >
       {isExpanded ? (
         <OpenAside stateSetterFunction={() => stateSetterFunction(false)} />
