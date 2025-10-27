@@ -1,10 +1,12 @@
-const icons = [
+import type { IconName } from "lucide-react/dynamic"
+
+const icons: IconName[] = [
   "house",
   "microscope",
   "users-round",
   "test-tubes",
   "heart",
-] as const
+]
 
 const navigationLinks = [
   {
@@ -34,12 +36,14 @@ const navigationLinks = [
   },
 ]
 
-const headerIconsArray = [
+const headerIconsArray: IconName[] = [
   "vector-square",
   icons[4],
   icons[3],
   icons[1],
   icons[2],
-] as const
+]
 
-export { navigationLinks, headerIconsArray }
+const defaultOne: IconName = "vector-square"
+
+export { navigationLinks, headerIconsArray, defaultOne }

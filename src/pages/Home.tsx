@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Outlet, useMatches } from "react-router-dom"
 import { useMediaQuery } from "react-responsive"
 import clsx from "clsx"
-import type { IconsType } from "../types/IconsType"
+import { defaultOne } from "../data/navigationLinks"
+import type { IconName } from "lucide-react/dynamic"
 
 const Home = () => {
   function changeStatus(value: boolean) {
@@ -38,9 +39,9 @@ const Home = () => {
   })
   const matches = useMatches()
   const matchingArray = matches.find((match) => match?.handle)
-  const handle = matchingArray?.handle as { title?: string; icon?: IconsType }
+  const handle = matchingArray?.handle as { title?: string; icon?: IconName }
   const textToShow = handle?.title ? handle?.title : "React World"
-  const iconToShow = handle?.icon ?? "vector-square"
+  const iconToShow = handle?.icon ?? defaultOne
 
   useEffect(() => {
     if (tabSize) {

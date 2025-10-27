@@ -2,14 +2,13 @@ import clsx from "clsx"
 import { Link } from "react-router-dom"
 import { ChevronsLeft } from "lucide-react"
 import { memo } from "react"
-import { DynamicIcon } from "lucide-react/dynamic"
-import type { IconsType } from "../types/IconsType"
+import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 
 interface Props {
   text: string
   backButton?: boolean
   home?: boolean
-  iconName?: IconsType
+  iconName?: IconName
   tabDesign?: boolean
 }
 

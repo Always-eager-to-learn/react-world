@@ -1,4 +1,6 @@
-export const icons = [
+import type { IconName } from "lucide-react/dynamic"
+
+export const icons: IconName[] = [
   "chart-no-axes-combined",
   "search",
   "mouse-pointer-click",
@@ -7,7 +9,7 @@ export const icons = [
   "lightbulb",
   "image",
   "circle-user-round",
-] as const
+]
 
 export const items = [
   {
