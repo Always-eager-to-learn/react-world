@@ -12,7 +12,7 @@ const ViewSourceButton = ({ shouldDisplayText = false }: Props) => {
       target="_blank"
     >
       {shouldDisplayText ? <p className="text-base">View Source Code</p> : null}
-      <Code size={28} />
+      <Code className="sm:w-[1.75rem] sm:h-[1.75rem] max-sm:w-[1.3rem] max-sm:h-[1.3rem]" />
     </a>
   )
 }

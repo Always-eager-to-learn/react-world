@@ -1,18 +1,20 @@
 import Aside from "../components/home/Aside"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { Outlet, useMatches } from "react-router-dom"
 import { useMediaQuery } from "react-responsive"
 import clsx from "clsx"
 import { defaultOne } from "../data/navigationLinks"
 import type { IconName } from "lucide-react/dynamic"
 import HomeHeader from "../components/home/HomeHeader"
+import { useStateContext } from "../context/GlobalState"
 
 const Home = () => {
   function changeStatus(value: boolean) {
     setLeftAsideOpen(value)
   }
 
-  const [leftAsideOpen, setLeftAsideOpen] = useState(true)
+  const { leftAsideOpen, setLeftAsideOpen } = useStateContext()
+  console.log("Left AsideOpenValue", leftAsideOpen)
   const tabSize = useMediaQuery({
     query: "(min-width: 40.625rem) and (max-width:66.25rem)",
   })
@@ -57,7 +59,7 @@ const Home = () => {
     } else {
       setLeftAsideOpen(true)
     }
-  }, [tabSize, phoneSize])
+  }, [tabSize, phoneSize, setLeftAsideOpen])
 
   return (
     <section
