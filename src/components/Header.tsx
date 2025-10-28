@@ -7,18 +7,10 @@ import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 interface Props {
   text: string
   backButton?: boolean
-  home?: boolean
   iconName?: IconName
-  tabDesign?: boolean
 }
 
-const Header = ({
-  text,
-  backButton,
-  home = false,
-  iconName,
-  tabDesign,
-}: Props) => {
+const Header = ({ text, backButton, iconName }: Props) => {
   const containerStyles = clsx({
     flex: !backButton,
     "justify-center": !backButton,
@@ -28,7 +20,6 @@ const Header = ({
     "py-3": true,
     "col-start-2": true,
     "row-start-1": true,
-    "col-end-4": tabDesign,
   })
 
   const elementStyles = clsx({
@@ -37,7 +28,7 @@ const Header = ({
   })
 
   return (
-    <header className={`${containerStyles} ${home ? "sticky top-0" : ""} px-4`}>
+    <header className={`${containerStyles} px-4`}>
       {backButton ? (
         <div>
           <Link
@@ -56,7 +47,7 @@ const Header = ({
       ) : null}
 
       <section
-        className={`${elementStyles} col-span-2 text-center ${iconName !== undefined ? `flex gap-4 items-center` : ``} text-[#fafafa] hover:text-[#D7EE09]  `}
+        className={`${elementStyles} col-span-2 text-center ${iconName !== undefined ? `flex gap-4 items-center` : ``} text-[#fafafa] hover:text-[#D7EE09]`}
       >
         <h1
           className={`md:text-3xl max-md:text-xl font-medium transition-[color] duration-200 ease-in`}
@@ -65,7 +56,7 @@ const Header = ({
         </h1>
         {iconName !== undefined ? (
           <DynamicIcon name={iconName} size={28} />
-        ) : null}{" "}
+        ) : null}
       </section>
     </header>
   )

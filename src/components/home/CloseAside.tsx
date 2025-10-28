@@ -13,6 +13,7 @@ const CloseAside = ({ stateSetterFunction }: Props) => {
   function setClassName(obj: NavLinkRenderProps) {
     return `${obj.isActive ? "bg-[#fdf0d5] text-[#35322c] hover:bg-[#F0F1F6] hover:text-[#1A1263]" : "bg-[#20447e] text-[#FEF5FD] hover:bg-[#FEF5FD] hover:text-[#20447e] "} p-4  rounded-full outline-2 outline-transparent cursor-pointer active:scale-90 hover:outline-[#20447E] [transition:scale_250ms_ease-out,background-color_300ms_ease-in-out,color_300ms_ease-in,outline-color_300ms_ease-in-out]`
   }
+
   const jsxElements = navigationLinks.map(({ iconName, location }) => {
     return (
       <NavLink to={location} className={setClassName} key={nanoid()}>
@@ -23,10 +24,10 @@ const CloseAside = ({ stateSetterFunction }: Props) => {
   return (
     <>
       <ButtonDiv design="open" onClickEvent={stateSetterFunction} />
-      <aside className="justify-self-center">
+      <aside className="justify-self-end">
         <nav className="row-start-2 flex flex-col gap-3">{jsxElements}</nav>
       </aside>
-      <section className="row-start-3 flex justify-center items-end">
+      <section className="row-start-3 flex justify-end items-end">
         <ViewSourceButton />
       </section>
     </>

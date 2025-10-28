@@ -8,32 +8,28 @@ interface Props {
   icon: IconName
   location: string
 }
-// B9F5D8
 
 const Entry = ({ name, description, icon, location }: Props) => {
   return (
-    <section className="bg-[hsl(201,47%,34%)] rounded-2xl flex flex-col p-4 gap-3.5 items-start">
+    <section className="bg-[#f0fff4] rounded-2xl flex flex-col p-4 gap-3.5 items-start">
       <div className="flex gap-3.5">
-        <DynamicIcon name={icon} size={38} className="stroke-[#F7B801]" />
+        <DynamicIcon name={icon} size={38} className="stroke-[#29339B]" />
 
         <section>
-          <h3 className="text-[#fafafa] text-2xl">{name}</h3>
-          <p className="text-[#fafafa]">{description}</p>
+          <h3 className="text-[#463F3A] text-2xl">{name}</h3>
+          <p className="text-[#463F3A]">{description}</p>
         </section>
       </div>
 
       <div className="self-end">
         <Link
           to={location}
-          className="flex gap-2.5 bg-[#BDD3FF] px-5 py-2 rounded-full items-center group hover:bg-[#1C3E55] hover:outline-2 hover:outline-[#ffd9cee5] hover:outline-solid hover:outline-offset-[2px] transition-[background-color] duration-300 ease-in"
+          className="flex gap-2.5 bg-[#FFB4A2] text-[#0D233D] px-5 py-2 rounded-full items-center outline-2 outline-transparent outline-offset-0 group hover:bg-[#1D2A63] hover:text-[#FFB4A2] hover:outline-[#0d233d] hover:outline-offset-[2px] transition-[background-color,color,outline-offset,outline-color] duration-300 ease-in"
         >
-          <p className="text-[#121212] group-hover:text-[#DADFEA] group-hover:font-medium transition-[color] duration-300 ease-in-out">
+          <p className="group-hover:font-medium md:text-lg max-md:text-base">
             Visit the design
           </p>
-          <ArrowRightToLine
-            size={22}
-            className="stroke-[#121212] group-hover:stroke-[#DADFEA] transition-[stroke] duration-200 ease-in"
-          />
+          <ArrowRightToLine size={22} />
         </Link>
       </div>
     </section>
