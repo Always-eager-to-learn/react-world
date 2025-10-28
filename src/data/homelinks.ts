@@ -1,5 +1,7 @@
 import type { IconName } from "lucide-react/dynamic"
 
+export type ItemType = "Project" | "Experiment"
+
 export const icons: IconName[] = [
   "chart-no-axes-combined",
   "search",
@@ -11,7 +13,7 @@ export const icons: IconName[] = [
   "circle-user-round",
 ]
 
-export type ItemType = "Project" | "Experiment"
+const itemsTypeArray : ItemType[] = ["Project", "Experiment"]
 
 export const items = [
   {
@@ -19,14 +21,14 @@ export const items = [
     description: "A design for a testimonials from people.",
     icon: icons[0],
     locationToGo: "/projects/testimonials",
-    type: "Project",
+    type: itemsTypeArray[0],
   },
   {
     name: "Search Layout",
     description: "A design for a search application introduction page.",
     icon: icons[1],
     locationToGo: "/projects/searchapp",
-    type: "Project",
+    type: itemsTypeArray[0],
   },
   {
     name: "Click Button",
@@ -34,7 +36,7 @@ export const items = [
       "A design introducing the functionality of a state management and re-rendering.",
     icon: icons[2],
     locationToGo: "/experiments/stateintro",
-    type: "Experiment",
+    type: itemsTypeArray[1],
   },
   {
     name: "Conditional Render",
@@ -42,7 +44,7 @@ export const items = [
       "A design introducing the conditional rendering of items in react.",
     icon: icons[3],
     locationToGo: "/experiments/conditionalRendering",
-    type: "Experiment",
+    type: itemsTypeArray[1],
   },
   {
     name: "Counter",
@@ -50,7 +52,7 @@ export const items = [
       "A design to show the working of state to create a basic counter.",
     icon: icons[4],
     locationToGo: "/experiments/counter",
-    type: "Experiment",
+    type: itemsTypeArray[1],
   },
   {
     name: "Light Carousel",
@@ -58,7 +60,7 @@ export const items = [
       "A design to show the changing to background color on state change. Like turning a light on and off.",
     icon: icons[5],
     locationToGo: "/experiments/lightswitch",
-    type: "Experiment",
+    type: itemsTypeArray[1],
   },
   {
     name: "Image Gallery",
@@ -66,7 +68,7 @@ export const items = [
       "A design for a image gallery comprising of images of dogs, cats, birds and horses.",
     icon: icons[6],
     locationToGo: "/projects/gallery?name=dogs",
-    type: "Project",
+    type: itemsTypeArray[0],
   },
   {
     name: "Profile Display",
@@ -74,6 +76,6 @@ export const items = [
       "A design showcasing two designs where there is a carousel view and a list view.",
     icon: icons[7],
     locationToGo: "/projects/profileview?view=carousel",
-    type: "Projects",
+    type: itemsTypeArray[0],
   },
 ]
