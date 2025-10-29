@@ -2,6 +2,8 @@ import clsx from "clsx"
 import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 import ButtonDiv from "../ButtonDiv"
 import OpenAside from "./OpenAside"
+import { useRef } from "react"
+// import { useCloseEventListener } from "../../hooks/eventListener"
 
 interface Props {
   text: string
@@ -33,6 +35,11 @@ const HomeHeader = ({
     "expanded-section": true,
     show: expandedState,
   })
+  const sectionElement = useRef<HTMLElement>(null)
+  // useCloseEventListener({
+  //   ref: sectionElement,
+  //   handler: () => console.log("Hi"),
+  // })
 
   return (
     <header className={`${containerStyles}`}>
@@ -49,6 +56,7 @@ const HomeHeader = ({
           </section>
           <section
             className={`fixed top-0 left-0 h-dvh grid grid-rows-[auto_auto_1fr] gap-3.5 ${sectionStyle} p-3.5  bg-[#b4d4ef]`}
+            ref={sectionElement}
           >
             <OpenAside
               stateSetterFunction={() => expandedStateSetterFunction(false)}

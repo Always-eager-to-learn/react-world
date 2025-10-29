@@ -44,8 +44,9 @@ const Home = () => {
     [gridCols]: leftAsideOpen && !tabSize && !phoneSize,
     "grid-cols-[4.65rem_6fr]":
       (!smallHeightStatus && !leftAsideOpen) || (tabSize && !phoneSize),
-    "grid-cols-[5rem_6fr]":
-      smallHeightStatus && !leftAsideOpen && tabSize && !phoneSize,
+    "grid-cols-[5.1rem_6fr]":
+      (!leftAsideOpen && smallHeightStatus) ||
+      (tabSize && smallHeightStatus && !phoneSize),
     "grid-cols-[6fr]": phoneSize,
   })
 
@@ -68,7 +69,7 @@ const Home = () => {
 
   return (
     <section
-      className={`grid ${gridStatusStyles} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-800 ease-[cubic-bezier(0.501,-0.023,0.367,1)]`}
+      className={`grid ${gridStatusStyles} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-800 ease-[cubic-bezier(0.518,0.138,0.41,0.872)]`}
     >
       <HomeHeader
         text={textToShow}
@@ -87,7 +88,7 @@ const Home = () => {
         />
       ) : null}
       <main
-        className={`row-start-2 col-start-2 ${tabSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll custom-scrollbar`}
+        className={`row-start-2 col-start-2 ${tabSize || phoneSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll custom-scrollbar`}
       >
         <Outlet />
       </main>
