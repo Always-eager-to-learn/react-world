@@ -43,9 +43,9 @@ const Home = () => {
   const gridStatusStyles = clsx({
     [gridCols]: leftAsideOpen && !tabSize && !phoneSize,
     "grid-cols-[4.65rem_6fr]":
-      !smallHeightStatus && !leftAsideOpen && (tabSize || !phoneSize),
+      (!smallHeightStatus && !leftAsideOpen) || (tabSize && !phoneSize),
     "grid-cols-[5rem_6fr]":
-      smallHeightStatus && !leftAsideOpen && (tabSize || !phoneSize),
+      smallHeightStatus && !leftAsideOpen && tabSize && !phoneSize,
     "grid-cols-[6fr]": phoneSize,
   })
 

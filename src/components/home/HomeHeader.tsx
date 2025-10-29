@@ -26,6 +26,7 @@ const HomeHeader = ({
     "sm:px-5": true,
     "max-sm:px-2.5": true,
     "col-start-2": true,
+    "col-end-4": true,
     "row-start-1": true,
   })
   const sectionStyle = clsx({
