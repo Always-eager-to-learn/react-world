@@ -6,15 +6,15 @@ import clsx from "clsx"
 import { defaultOne } from "../data/navigationLinks"
 import type { IconName } from "lucide-react/dynamic"
 import HomeHeader from "../components/home/HomeHeader"
-import { useStateContext } from "../context/GlobalState"
+import { useAsideContext, useInitialRenderContext } from "../hooks/contextHook"
 
 const Home = () => {
   function changeStatus(value: boolean) {
     setLeftAsideOpen(value)
   }
 
-  const { leftAsideOpen, setLeftAsideOpen } = useStateContext()
-  console.log("Left AsideOpenValue", leftAsideOpen)
+  const { leftAsideOpen, setLeftAsideOpen } = useAsideContext()
+  const { initialRender, setInitialRender } = useInitialRenderContext()
   const tabSize = useMediaQuery({
     query: "(min-width: 40.625rem) and (max-width:66.25rem)",
   })
@@ -31,6 +31,9 @@ const Home = () => {
   const smallSize = useMediaQuery({
     query: "(min-width: 66.25rem)",
   })
+  const smallHeightStatus = useMediaQuery({
+    query: "(max-height: 31rem)",
+  })
 
   const gridCols = clsx({
     "grid-cols-[14rem_6fr]": smallSize,
@@ -39,7 +42,10 @@ const Home = () => {
   })
   const gridStatusStyles = clsx({
     [gridCols]: leftAsideOpen && !tabSize && !phoneSize,
-    "grid-cols-[4.65rem_6fr]": !leftAsideOpen || (tabSize && !phoneSize),
+    "grid-cols-[4.65rem_6fr]":
+      !smallHeightStatus && !leftAsideOpen && (tabSize || !phoneSize),
+    "grid-cols-[5rem_6fr]":
+      smallHeightStatus && !leftAsideOpen && (tabSize || !phoneSize),
     "grid-cols-[6fr]": phoneSize,
   })
 
@@ -50,20 +56,19 @@ const Home = () => {
   const iconToShow = handle?.icon ?? defaultOne
 
   useEffect(() => {
-    if (tabSize) {
+    if (tabSize && !initialRender) {
+      setInitialRender(true)
       setLeftAsideOpen(false)
-    } else if (!tabSize && !phoneSize) {
-      setLeftAsideOpen(true)
+    } else if (!tabSize && initialRender) {
+      setInitialRender(false)
     } else if (phoneSize) {
       setLeftAsideOpen(false)
-    } else {
-      setLeftAsideOpen(true)
     }
-  }, [tabSize, phoneSize, setLeftAsideOpen])
+  }, [tabSize, phoneSize, setLeftAsideOpen, initialRender, setInitialRender])
 
   return (
     <section
-      className={`grid ${gridStatusStyles} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-1000 ease-in-out`}
+      className={`grid ${gridStatusStyles} grid-rows-[auto_1fr] h-dvh transition-[grid-template-columns] duration-800 ease-[cubic-bezier(0.501,-0.023,0.367,1)]`}
     >
       <HomeHeader
         text={textToShow}
@@ -77,10 +82,12 @@ const Home = () => {
           isExpanded={leftAsideOpen}
           stateSetterFunction={changeStatus}
           tabDesign={tabSize}
+          smallHeightStatus={smallHeightStatus}
+          tabSize={tabSize}
         />
       ) : null}
       <main
-        className={`row-start-2 col-start-2 ${tabSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll`}
+        className={`row-start-2 col-start-2 ${tabSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll custom-scrollbar`}
       >
         <Outlet />
       </main>

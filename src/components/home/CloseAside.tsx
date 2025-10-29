@@ -17,7 +17,7 @@ const CloseAside = ({ stateSetterFunction }: Props) => {
   const jsxElements = navigationLinks.map(({ iconName, location }) => {
     return (
       <NavLink to={location} className={setClassName} key={nanoid()}>
-        <DynamicIcon name={iconName} />
+        <DynamicIcon name={iconName} strokeWidth={2} />
       </NavLink>
     )
   })

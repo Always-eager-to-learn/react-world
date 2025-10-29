@@ -4,6 +4,27 @@ button {
     cursor: pointer;
 }
 
+.custom-scrollbar {
+    cursor: pointer;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 0.4375rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #bbcbcb;
+    border-radius: 2rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #9590a8;
+}
+
 .grid-column {
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
 }
@@ -76,4 +97,22 @@ button {
     transition-delay: 0s;
     opacity: 1;
     visibility: visible;
+}
+
+.expanded-section {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-16rem);
+    filter: drop-shadow(8px 0 30px #b4d4ef);
+    transition:
+        opacity 350ms ease-in-out,
+        visibility 350ms 350ms ease,
+        transform 550ms ease-in-out;
+}
+
+.expanded-section.show {
+    transition-delay: 0s;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
 }

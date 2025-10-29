@@ -28,6 +28,10 @@ const HomeHeader = ({
     "col-start-2": true,
     "row-start-1": true,
   })
+  const sectionStyle = clsx({
+    "expanded-section": true,
+    show: expandedState,
+  })
 
   return (
     <header className={`${containerStyles}`}>
@@ -43,7 +47,7 @@ const HomeHeader = ({
             />
           </section>
           <section
-            className={`fixed top-0 left-0 h-dvh grid grid-rows-[auto_auto_1fr] gap-3.5 ${expandedState ? "translate-x-0" : "-translate-x-64"} [transition:translate_600ms_ease-in-out] p-3.5  bg-[#b4d4ef]`}
+            className={`fixed top-0 left-0 h-dvh grid grid-rows-[auto_auto_1fr] gap-3.5 ${sectionStyle} p-3.5  bg-[#b4d4ef]`}
           >
             <OpenAside
               stateSetterFunction={() => expandedStateSetterFunction(false)}

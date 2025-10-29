@@ -1,11 +1,14 @@
-import { RouterProvider } from 'react-router-dom'
-import { createRoutes } from './routes'
+import { RouterProvider } from "react-router-dom"
+import { createRoutes } from "./routes"
+import AsideStateSet from "./context/GlobalState"
 
 function App() {
   const routes = createRoutes()
 
   return (
-    <RouterProvider router={routes} />
+    <AsideStateSet>
+      <RouterProvider router={routes} />
+    </AsideStateSet>
   )
 }
 

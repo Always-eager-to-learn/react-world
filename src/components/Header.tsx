@@ -2,15 +2,13 @@ import clsx from "clsx"
 import { Link } from "react-router-dom"
 import { ChevronsLeft } from "lucide-react"
 import { memo } from "react"
-import { DynamicIcon, type IconName } from "lucide-react/dynamic"
 
 interface Props {
   text: string
   backButton?: boolean
-  iconName?: IconName
 }
 
-const Header = ({ text, backButton, iconName }: Props) => {
+const Header = ({ text, backButton }: Props) => {
   const containerStyles = clsx({
     flex: !backButton,
     "justify-center": !backButton,
@@ -18,8 +16,6 @@ const Header = ({ text, backButton, iconName }: Props) => {
     "grid-cols-[100px_1fr_1fr]": backButton,
     "bg-[#264A91]": true,
     "py-3": true,
-    "col-start-2": true,
-    "row-start-1": true,
   })
 
   const elementStyles = clsx({
@@ -47,16 +43,13 @@ const Header = ({ text, backButton, iconName }: Props) => {
       ) : null}
 
       <section
-        className={`${elementStyles} col-span-2 text-center ${iconName !== undefined ? `flex gap-4 items-center` : ``} text-[#fafafa] hover:text-[#D7EE09]`}
+        className={`${elementStyles} col-span-2 text-center text-[#fafafa] hover:text-[#D7EE09]`}
       >
         <h1
           className={`md:text-3xl max-md:text-xl font-medium transition-[color] duration-200 ease-in`}
         >
           {text}
         </h1>
-        {iconName !== undefined ? (
-          <DynamicIcon name={iconName} size={28} />
-        ) : null}
       </section>
     </header>
   )

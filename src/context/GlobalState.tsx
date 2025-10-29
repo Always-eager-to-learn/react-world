@@ -1,31 +1,19 @@
-import { createContext, useContext } from "react"
 import { useState, type ReactNode } from "react"
+import { AsideContext, InitialRenderContext } from "../hooks/contextHook"
 
-interface StateType {
-  leftAsideOpen: boolean
-  setLeftAsideOpen: (value: boolean) => void
-}
-
-const MainContext = createContext<StateType | undefined>(undefined)
-
-const StateSetter = ({ children }: { children: ReactNode }) => {
+const AsideStateSet = ({ children }: { children: ReactNode }) => {
   const [leftAsideOpen, setLeftAsideOpen] = useState(true)
+  const [initialRender, setInitialRender] = useState(false)
 
   return (
-    <MainContext.Provider value={{ leftAsideOpen, setLeftAsideOpen }}>
-      {children}
-    </MainContext.Provider>
+    <AsideContext.Provider value={{ leftAsideOpen, setLeftAsideOpen }}>
+      <InitialRenderContext.Provider
+        value={{ initialRender, setInitialRender }}
+      >
+        {children}
+      </InitialRenderContext.Provider>
+    </AsideContext.Provider>
   )
 }
 
-const useStateContext = () => {
-  const stateValue = useContext(MainContext)
-  if (stateValue === undefined) {
-    throw new Error(
-      "Please ensure that the context has been created first before it can be used",
-    )
-  }
-  return stateValue
-}
-
-export { useStateContext, StateSetter }
+export default AsideStateSet
