@@ -10,6 +10,7 @@ import Gallery from "./pages/Gallery"
 import ProfileCarousel from "./pages/ProfileCarousel"
 import HomePage from "./pages/Home/HomePage"
 import { headerIconsArray } from "./data/navigationLinks"
+import Tasks from "./pages/Tasks"
 
 function createRoutes() {
   const routes = createBrowserRouter([
@@ -47,6 +48,7 @@ function createRoutes() {
         { path: "searchapp", Component: SearchApp },
         { path: "gallery", Component: Gallery },
         { path: "profileview", Component: ProfileCarousel },
+        { path: "todoapp", Component: Tasks },
       ],
     },
     {

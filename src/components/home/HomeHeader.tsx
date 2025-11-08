@@ -27,7 +27,8 @@ const HomeHeader = ({
     "py-3": true,
     "sm:px-5": true,
     "max-sm:px-2.5": true,
-    "col-start-2": true,
+    "col-start-2": !phoneDesignStatus,
+    "col-start-1": phoneDesignStatus,
     "col-end-4": true,
     "row-start-1": true,
   })

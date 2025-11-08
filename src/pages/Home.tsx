@@ -1,5 +1,5 @@
 import Aside from "../components/home/Aside"
-import { useEffect } from "react"
+import { useEffect, useRef, type UIEvent, useLayoutEffect } from "react"
 import { Outlet, useMatches } from "react-router-dom"
 import { useMediaQuery } from "react-responsive"
 import clsx from "clsx"
@@ -7,14 +7,21 @@ import { defaultOne } from "../data/navigationLinks"
 import type { IconName } from "lucide-react/dynamic"
 import HomeHeader from "../components/home/HomeHeader"
 import { useAsideContext, useInitialRenderContext } from "../hooks/contextHook"
+import { useScrollChange } from "../hooks/scrollPosition"
 
 const Home = () => {
   function changeStatus(value: boolean) {
     setLeftAsideOpen(value)
   }
 
+  function handleScroll(event: UIEvent<HTMLElement>) {
+    scrollValue.setScrollPosition(event.currentTarget.scrollTop)
+  }
+
   const { leftAsideOpen, setLeftAsideOpen } = useAsideContext()
   const { initialRender, setInitialRender } = useInitialRenderContext()
+  const scrollValue = useScrollChange()
+  const isLoading = useRef(true)
   const tabSize = useMediaQuery({
     query: "(min-width: 40.625rem) and (max-width:66.25rem)",
   })
@@ -55,8 +62,9 @@ const Home = () => {
   const handle = matchingArray?.handle as { title?: string; icon?: IconName }
   const textToShow = handle?.title ? handle?.title : "React World"
   const iconToShow = handle?.icon ?? defaultOne
+  const mainSectionRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (tabSize && !initialRender) {
       setInitialRender(true)
       setLeftAsideOpen(false)
@@ -66,6 +74,16 @@ const Home = () => {
       setLeftAsideOpen(false)
     }
   }, [tabSize, phoneSize, setLeftAsideOpen, initialRender, setInitialRender])
+
+  useEffect(() => {
+    if (isLoading && mainSectionRef.current !== null) {
+      mainSectionRef.current.scrollTo({
+        top: scrollValue.getScrollPosition(),
+        behavior: "instant",
+      })
+      isLoading.current = true
+    }
+  }, [isLoading, scrollValue])
 
   return (
     <section
@@ -88,7 +106,9 @@ const Home = () => {
         />
       ) : null}
       <main
-        className={`row-start-2 col-start-2 ${tabSize || phoneSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-3.5 px-2 grid-column auto-rows-max overflow-y-scroll custom-scrollbar`}
+        className={`row-start-2 ${phoneSize ? "col-start-1 px-5" : "col-start-2 px-7"} ${tabSize || phoneSize ? "col-end-4" : ""} grid gap-4.5 bg-[#1a3144] py-4 grid-column auto-rows-max overflow-y-scroll custom-scrollbar`}
+        ref={mainSectionRef}
+        onScrollEnd={handleScroll}
       >
         <Outlet />
       </main>

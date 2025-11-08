@@ -11,9 +11,10 @@ export const icons: IconName[] = [
   "lightbulb",
   "image",
   "circle-user-round",
+  "notebook",
 ]
 
-const itemsTypeArray : ItemType[] = ["Project", "Experiment"]
+const itemsTypeArray: ItemType[] = ["Project", "Experiment"]
 
 export const items = [
   {
@@ -76,6 +77,14 @@ export const items = [
       "A design showcasing two designs where there is a carousel view and a list view.",
     icon: icons[7],
     locationToGo: "/projects/profileview?view=carousel",
+    type: itemsTypeArray[0],
+  },
+  {
+    name: "To-Do-List",
+    description:
+      "A project combining frontend and backend to create a todo application.",
+    icon: icons[8],
+    locationToGo: "/projects/todoapp",
     type: itemsTypeArray[0],
   },
 ]
