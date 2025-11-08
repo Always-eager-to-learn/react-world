@@ -27,12 +27,12 @@ const OpenAside = ({ stateSetterFunction }: Props) => {
           <DynamicIcon
             name={element.iconName}
             strokeWidth={2}
-            className="sm:w-[1.75rem] sm:h-[1.75rem] max-sm:w-[1.25rem] max-sm:h-[1.25rem]"
+            className="sm:w-7 sm:h-7 max-sm:w-5max-sm:h-5"
           />
           <p className="md:text-lg max-md:text-base">{element.name}</p>
         </section>
         {toShowIcon ? (
-          <ChevronRight className="opacity-0 group-hover:opacity-100 transition-[opacity] duration-200 ease-in-out" />
+          <ChevronRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out" />
         ) : null}
       </NavLink>
     )

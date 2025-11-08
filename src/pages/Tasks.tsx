@@ -1,9 +1,9 @@
-import { useEffect, useState, type JSX } from "react"
+import { useState, type JSX } from "react"
 import Header from "../components/Header"
 import { ColorRing } from "react-loader-spinner"
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState<Document[]>([])
+  const [tasks] = useState<Document[]>([])
   // const init = async () => {
   //   const responses = await dbFunctions.tasks.list()
   //   setTasks(responses.rows)

@@ -44,8 +44,6 @@ function createRoutes() {
     {
       path: "/projects",
       children: [
-        { path: "testimonials", Component: TestimonialPage },
-        { path: "searchapp", Component: SearchApp },
         { path: "gallery", Component: Gallery },
         { path: "profileview", Component: ProfileCarousel },
         { path: "todoapp", Component: Tasks },
@@ -58,6 +56,13 @@ function createRoutes() {
         { path: "conditionalrendering", Component: ConditionalRendering },
         { path: "counter", Component: Counter },
         { path: "lightswitch", Component: LightSwitch },
+      ],
+    },
+    {
+      path: "/designs",
+      children: [
+        { path: "testimonials", Component: TestimonialPage },
+        { path: "searchapp", Component: SearchApp },
       ],
     },
   ])
