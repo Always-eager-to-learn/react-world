@@ -11,6 +11,7 @@ import ProfileCarousel from "./pages/ProfileCarousel"
 import HomePage from "./pages/Home/HomePage"
 import { headerIconsArray } from "./data/navigationLinks"
 import Tasks from "./pages/Tasks"
+import DrawingCanvas from "./pages/DrawingCanvas"
 
 function createRoutes() {
   const routes = createBrowserRouter([
@@ -47,6 +48,7 @@ function createRoutes() {
         { path: "gallery", Component: Gallery },
         { path: "profileview", Component: ProfileCarousel },
         { path: "todoapp", Component: Tasks },
+        { path: "drawingcanvas", Component: DrawingCanvas },
       ],
     },
     {

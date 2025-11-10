@@ -15,7 +15,7 @@ interface Props {
 const Entry = ({ name, description, icon, location, type }: Props) => {
   const styles = clsx({
     "bg-[#59A5D8]": type === "Experiment",
-    "bg-[#FFBF00]": type === "Project",
+    "bg-[#ECA400]": type === "Project",
     "bg-[#F991CC]": type === "Design",
   })
   return (
