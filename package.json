@@ -20,6 +20,7 @@
     "react-loader-spinner": "^7.0.3",
     "react-responsive": "^10.0.1",
     "react-router-dom": "^7.9.5",
+    "roughjs": "^4.6.6",
     "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
