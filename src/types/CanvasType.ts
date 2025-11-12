@@ -1,7 +1,17 @@
 import type { Drawable } from "roughjs/bin/core"
 
 export interface CanvasType {
-  state: "Erase" | "DrawRect" | "Line"
+  state: "Erase" | "DrawRect" | "Line" | "Selection"
+}
+
+interface TypeWarning {
+  type: "stroke" | null
+}
+
+export interface WarningCanvas {
+  showWarning: boolean
+  warningMessage: string
+  warningType: TypeWarning
 }
 
 export type TypeDraw = "normal" | "rough"
@@ -11,6 +21,7 @@ export function getCanvasTypes(): { [index: string]: CanvasType } {
     erase: { state: "Erase" },
     drawRect: { state: "DrawRect" },
     line: { state: "Line" },
+    select: { state: "Selection" },
   }
 }
 

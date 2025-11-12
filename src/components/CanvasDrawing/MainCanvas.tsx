@@ -4,8 +4,10 @@ import {
   type CanvasType,
   getCanvasTypes,
   type TypeDraw,
+  type WarningCanvas,
 } from "../../types/CanvasType"
 import CanvasSelectorButton from "./CanvasSelectorButtons"
+import CanvasWarning from "./CanvasWarning"
 import CanvasAside from "./AsideCanvas"
 import { throttle } from "../../scripts/Throttle"
 import rough from "roughjs"
@@ -34,25 +36,30 @@ const MainCanvas = () => {
     let siy = y2
     const elementState = currentState.state
 
-    if (typeOfDraw === "rough") {
-      type = "rough"
-      if (elementState === "Line") {
-        roughElement = roughGenerator.current.line(fix, fiy, six, siy, {
-          stroke: canvasColor,
-          strokeWidth: getIntFromString(canvasStroke),
-        })
-      } else if (elementState === "DrawRect") {
-        six = six - fix
-        siy = siy - fiy
-        roughElement = roughGenerator.current.rectangle(fix, fiy, six, siy, {
-          stroke: canvasColor,
-          strokeWidth: getIntFromString(canvasStroke),
-        })
+    switch (typeOfDraw) {
+      case "rough": {
+        type = "rough"
+        if (elementState === "Line") {
+          roughElement = roughGenerator.current.line(fix, fiy, six, siy, {
+            stroke: canvasColor,
+            strokeWidth: getIntFromString(canvasStroke),
+          })
+        } else if (elementState === "DrawRect") {
+          six = six - fix
+          siy = siy - fiy
+          roughElement = roughGenerator.current.rectangle(fix, fiy, six, siy, {
+            stroke: canvasColor,
+            strokeWidth: getIntFromString(canvasStroke),
+          })
+        }
+        break
       }
-    } else {
-      if (elementState === "DrawRect") {
-        six = six - fix
-        siy = siy - fiy
+      case "normal": {
+        if (elementState === "DrawRect") {
+          six = six - fix
+          siy = siy - fiy
+        }
+        break
       }
     }
 
@@ -114,6 +121,17 @@ const MainCanvas = () => {
     setCurrentState(newValue)
   }
 
+  function setStrokeValue(val?: number) {
+    if (val) {
+      setCanvasStroke(val)
+    }
+    setWarning({
+      showWarning: false,
+      warningMessage: "",
+      warningType: { type: null },
+    })
+  }
+
   const [isDrawing, setIsDrawing] = useState(false)
   const canvasContext = useRef<CanvasRenderingContext2D | null>(null)
   const roughCanvas = useRef<RoughCanvas | null>(null)
@@ -128,6 +146,15 @@ const MainCanvas = () => {
   const [canvasStroke, setCanvasStroke] = useState<number | string>(
     canvasContext.current?.lineWidth || 5,
   )
+  const [warning, setWarning] = useState<WarningCanvas>({
+    showWarning: false,
+    warningMessage: "",
+    warningType: { type: null },
+  })
+  const messages = warning.warningMessage.split(".")
+  const jsxElements = messages.map((element) => (
+    <p className="max-sm:text-base sm:text-lg">{element}</p>
+  ))
 
   useEffect(() => {
     const canvas = canvasElement.current
@@ -174,33 +201,41 @@ const MainCanvas = () => {
       canvasContext.current.clearRect(
         0,
         0,
-        canvasElement.current.width,
-        canvasElement.current.height,
+        canvasElement.current.clientWidth,
+        canvasElement.current.clientHeight,
       )
       const canvas = canvasContext.current
-      elements.forEach((element) => {
-        if (
-          element.type === "rough" &&
-          element.element &&
-          roughCanvas.current
-        ) {
-          roughCanvas.current.draw(element.element)
-        } else if (element.type === "normal" && canvas) {
-          const width = getIntFromString(element.strokeWidth)
-          canvas.strokeStyle = element.strokeColor
-          canvas.lineWidth = width
-          if (element.state.state === "Line") {
-            canvas.beginPath()
-            canvas.moveTo(element.x1, element.y1)
-            canvas.lineTo(element.x1, element.y1)
-            canvas.lineTo(element.x2, element.y2)
-            canvas.closePath()
-          } else if (element.state.state === "DrawRect") {
-            canvas.rect(element.x1, element.y1, element.x2, element.y2)
+      if (elements.length > 0) {
+        elements.forEach((element) => {
+          switch (element.type) {
+            case "rough": {
+              if (element.element && roughCanvas.current) {
+                roughCanvas.current.draw(element.element)
+              }
+              break
+            }
+            case "normal": {
+              if (canvas) {
+                const width = getIntFromString(element.strokeWidth)
+                canvas.strokeStyle = element.strokeColor
+                canvas.lineWidth = width
+                canvas.beginPath()
+                if (element.state.state === "Line") {
+                  canvas.moveTo(element.x1, element.y1)
+                  canvas.lineTo(element.x1, element.y1)
+                  canvas.lineTo(element.x2, element.y2)
+                  canvas.closePath()
+                } else if (element.state.state === "DrawRect") {
+                  canvas.rect(element.x1, element.y1, element.x2, element.y2)
+                }
+                canvas.closePath()
+                canvas.stroke()
+              }
+              break
+            }
           }
-          canvas.stroke()
-        }
-      })
+        })
+      }
     }
   }, [elements])
 
@@ -234,7 +269,30 @@ const MainCanvas = () => {
         setCanvasStroke={setCanvasColor}
         canvasStrokeWidth={canvasStroke}
         setCanvasStrokeWidth={setCanvasStroke}
+        warning={warning}
+        setWarning={setWarning}
       />
+      <CanvasWarning warning={warning} setWarning={setWarning}>
+        {warning.showWarning ? (
+          <>
+            <section className="px-4 py-2">{jsxElements}</section>
+            <section className="flex gap-3.5 justify-evenly px-4 py-2">
+              <button
+                className="py-3 px-3.5 rounded-2xl outline-2 outline-transparent font-medium sm:text-lg max-sm:text-base bg-[#fafefb] text-[#2B2D42] [transition:outline-color_350ms_ease-in-out,scale_250ms_ease-out,translate_300ms_ease-in-out] hover:translate-y-1 active:scale-90 hover:outline-[#083D77]"
+                onClick={() => setStrokeValue(100)}
+              >
+                Default to 100
+              </button>
+              <button
+                className="py-3 px-3.5 rounded-2xl outline-2 outline-transparent font-medium sm:text-lg max-sm:text-base bg-[#FAFEFB] text-[#940110] [transition:outline-color_350ms_ease-in-out,scale_250ms_ease-out] active:scale-95 hover:outline-[#083D77]"
+                onClick={() => setStrokeValue()}
+              >
+                Set {canvasStroke}
+              </button>
+            </section>
+          </>
+        ) : null}
+      </CanvasWarning>
     </main>
   )
 }

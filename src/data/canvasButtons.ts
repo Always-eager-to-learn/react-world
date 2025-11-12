@@ -6,11 +6,17 @@ const icons: { [index: string]: IconName } = {
   eraser: "eraser",
   drawRect: "rectangle-horizontal",
   line: "minus",
+  selection: "mouse-pointer-2",
 }
 
 const types = getCanvasTypes()
 
 export const canvasButtonInfo = [
+  {
+    name: "Select Objects",
+    iconName: icons.selection,
+    type: types.select,
+  },
   {
     name: "Draw Rectangle",
     iconName: icons.drawRect,

@@ -2,7 +2,11 @@ import { ChevronLeft, CircleX } from "lucide-react"
 import { Link } from "react-router-dom"
 import HeaderInputCanvas from "./HeaderInputCanvas"
 import { type RefObject } from "react"
-import type { CanvasElements, TypeDraw } from "../../types/CanvasType"
+import type {
+  CanvasElements,
+  TypeDraw,
+  WarningCanvas,
+} from "../../types/CanvasType"
 
 interface Props {
   canvasContext: RefObject<CanvasRenderingContext2D | null>
@@ -14,6 +18,8 @@ interface Props {
   setCanvasStroke: (val: string) => void
   canvasStrokeWidth: number | string
   setCanvasStrokeWidth: (val: number | string) => void
+  warning: WarningCanvas
+  setWarning: (val: WarningCanvas) => void
 }
 
 const CanvasAside = ({
@@ -26,6 +32,8 @@ const CanvasAside = ({
   setCanvasStroke,
   canvasStrokeWidth,
   setCanvasStrokeWidth,
+  warning,
+  setWarning,
 }: Props) => {
   function setColor(e: React.ChangeEvent<HTMLInputElement>) {
     if (canvasContext.current) {
@@ -38,6 +46,20 @@ const CanvasAside = ({
     const value = e.currentTarget.value
     const intValue = parseInt(value, 10)
     if (!isNaN(intValue) && canvasContext.current) {
+      if (intValue > 100) {
+        setWarning({
+          showWarning: true,
+          warningMessage:
+            "Entered stroke width is greater than 100. What action would you like to perform",
+          warningType: { type: "stroke" },
+        })
+      } else if (warning.showWarning && intValue < 100) {
+        setWarning({
+          showWarning: false,
+          warningMessage: "",
+          warningType: { type: null },
+        })
+      }
       setCanvasStrokeWidth(intValue)
     } else if (value === "" && canvasContext.current) {
       setCanvasStrokeWidth("")

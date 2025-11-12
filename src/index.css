@@ -120,3 +120,16 @@ button {
     visibility: visible;
     transform: translateX(0);
 }
+
+.warning-section {
+    transform: translateX(50%);
+    opacity: 0;
+    transition:
+        transform 450ms ease-in-out,
+        opacity 400ms ease-in-out;
+}
+
+.warning-section.show {
+    transform: translateX(-2%);
+    opacity: 1;
+}
