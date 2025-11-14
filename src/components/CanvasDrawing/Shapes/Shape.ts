@@ -7,6 +7,7 @@ export abstract class Shape {
   static roughCanvas: RoughCanvas
   static roughgenerator: RoughGenerator
   static focusedColor: string = "#A06CD5"
+  static withinFocusColor: string = "#6a1818"
 
   static setContext(ctx: CanvasRenderingContext2D, roughCanvas: RoughCanvas) {
     Shape.canvas = ctx

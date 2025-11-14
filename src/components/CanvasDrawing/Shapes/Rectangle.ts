@@ -51,7 +51,6 @@ export class Rectangle extends Shape {
   private createDrawable(): void {
     if (Shape.roughgenerator) {
       const color = this.focusedState ? Shape.focusedColor : this.strokeColor
-      console.log(color)
       this.element = Shape.roughgenerator.rectangle(
         this.x1,
         this.y1,
