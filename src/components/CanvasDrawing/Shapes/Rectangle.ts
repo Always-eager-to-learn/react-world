@@ -18,6 +18,7 @@ export class Rectangle extends Shape {
   }
   element: null | Drawable
   elementState: CanvasType
+  focusedState: boolean
 
   constructor(
     x1: number,
@@ -44,17 +45,20 @@ export class Rectangle extends Shape {
     }
     this.element = null
     this.elementState = { state: "DrawRect" }
+    this.focusedState = false
   }
 
   private createDrawable(): void {
     if (Shape.roughgenerator) {
+      const color = this.focusedState ? Shape.focusedColor : this.strokeColor
+      console.log(color)
       this.element = Shape.roughgenerator.rectangle(
         this.x1,
         this.y1,
         this.width,
         this.height,
         {
-          stroke: this.strokeColor,
+          stroke: color,
           strokeWidth: getIntFromString(this.strokeWidth),
         },
       )
@@ -103,7 +107,9 @@ export class Rectangle extends Shape {
       case "normal": {
         if (canvas) {
           const width = getIntFromString(this.strokeWidth)
-          canvas.strokeStyle = this.strokeColor
+          canvas.strokeStyle = this.focusedState
+            ? Shape.focusedColor
+            : this.strokeColor
           canvas.lineWidth = width
           canvas.beginPath()
           canvas.rect(this.x1, this.y1, this.width, this.height)
@@ -113,6 +119,18 @@ export class Rectangle extends Shape {
         break
       }
     }
+  }
+
+  focusedElement(): void {
+    if (this.strokeColor !== Shape.focusedColor) {
+      this.focusedState = true
+      this.createDrawable()
+    }
+  }
+
+  revertFocus(): void {
+    this.focusedState = false
+    this.createDrawable()
   }
 
   elementWithinRange(clientX: number, clientY: number): boolean {

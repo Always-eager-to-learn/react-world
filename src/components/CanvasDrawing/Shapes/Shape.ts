@@ -6,6 +6,7 @@ export abstract class Shape {
   static canvas: CanvasRenderingContext2D
   static roughCanvas: RoughCanvas
   static roughgenerator: RoughGenerator
+  static focusedColor: string = "#A06CD5"
 
   static setContext(ctx: CanvasRenderingContext2D, roughCanvas: RoughCanvas) {
     Shape.canvas = ctx
@@ -22,4 +23,6 @@ export abstract class Shape {
   abstract elementWithinRange(clientX: number, clientY: number): boolean
   abstract setOffset(clientX: number, clientY: number): void
   abstract getIndex(): number
+  abstract focusedElement(): void
+  abstract revertFocus(): void
 }

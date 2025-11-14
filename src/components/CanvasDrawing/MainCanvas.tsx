@@ -41,6 +41,22 @@ const MainCanvas = () => {
     setElements((prev) => [...prev, shape])
   }
 
+  const drawElements = (elements: Shape[]) => {
+    if (canvasContext.current && canvasElement.current) {
+      canvasContext.current.clearRect(
+        0,
+        0,
+        canvasElement.current.clientWidth,
+        canvasElement.current.clientHeight,
+      )
+      if (elements.length > 0) {
+        elements.forEach((element) => {
+          element.draw()
+        })
+      }
+    }
+  }
+
   const startDrawing = throttle(function (
     event: React.MouseEvent<HTMLCanvasElement>,
   ) {
@@ -82,6 +98,7 @@ const MainCanvas = () => {
         const selectedElement = element.pop()
         if (selectedElement) {
           selectedElement.setOffset(clientX, clientY)
+          selectedElement.focusedElement()
           setAction("selection")
           setSelectedElements(selectedElement)
         }
@@ -118,6 +135,8 @@ const MainCanvas = () => {
       setAction("none")
       if (selectedElements) {
         event.currentTarget.style.cursor = "default"
+        selectedElements.revertFocus()
+        drawElements(elements)
       }
       setSelectedElements(null)
     }
@@ -206,19 +225,7 @@ const MainCanvas = () => {
   }, [])
 
   useEffect(() => {
-    if (canvasContext.current && canvasElement.current) {
-      canvasContext.current.clearRect(
-        0,
-        0,
-        canvasElement.current.clientWidth,
-        canvasElement.current.clientHeight,
-      )
-      if (elements.length > 0) {
-        elements.forEach((element) => {
-          element.draw()
-        })
-      }
-    }
+    drawElements(elements)
   }, [elements])
 
   return (

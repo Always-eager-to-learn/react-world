@@ -85,7 +85,7 @@ const CanvasWarning = ({
 
   return (
     <section
-      className={`pb-4 pt-0 absolute bottom-2 right-0 rounded-2xl drop-shadow-2xl ${styles} -translate-y-10 warning-section overflow-hidden -bg-linear-210 from-[#F5D6BA] to-[hsl(100,97%,98%)]`}
+      className={`pb-4 pt-0 fixed z-2 bottom-2 right-0 rounded-2xl drop-shadow-2xl ${styles} -translate-y-10 warning-section overflow-hidden -bg-linear-210 from-[#F5D6BA] to-[hsl(100,97%,98%)]`}
     >
       <section>
         {warning.showWarning ? (

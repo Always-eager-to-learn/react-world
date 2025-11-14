@@ -19,6 +19,7 @@ export class Line extends Shape {
   }
   element: null | Drawable
   elementState: CanvasType
+  focusedState: boolean
 
   constructor(
     x1: number,
@@ -45,17 +46,19 @@ export class Line extends Shape {
     }
     this.element = null
     this.elementState = { state: "Line" }
+    this.focusedState = false
   }
 
   private createDrawable(): void {
     if (Shape.roughgenerator) {
+      const color = this.focusedState ? Shape.focusedColor : this.strokeColor
       this.element = Shape.roughgenerator.line(
         this.x1,
         this.y1,
         this.x2,
         this.y2,
         {
-          stroke: this.strokeColor,
+          stroke: color,
           strokeWidth: getIntFromString(this.strokeWidth),
         },
       )
@@ -106,7 +109,9 @@ export class Line extends Shape {
       case "normal": {
         if (canvas) {
           const width = getIntFromString(this.strokeWidth)
-          canvas.strokeStyle = this.strokeColor
+          canvas.strokeStyle = this.focusedState
+            ? Shape.focusedColor
+            : this.strokeColor
           canvas.lineWidth = width
           canvas.beginPath()
           canvas.moveTo(this.x1, this.y1)
@@ -118,6 +123,18 @@ export class Line extends Shape {
         break
       }
     }
+  }
+
+  focusedElement(): void {
+    if (this.strokeColor !== Shape.focusedColor) {
+      this.focusedState = true
+      this.createDrawable()
+    }
+  }
+
+  revertFocus(): void {
+    this.focusedState = false
+    this.createDrawable()
   }
 
   elementWithinRange(clientX: number, clientY: number): boolean {
