@@ -1,25 +1,24 @@
 import { ChevronLeft, CircleX } from "lucide-react"
 import { Link } from "react-router-dom"
 import HeaderInputCanvas from "./HeaderInputCanvas"
-import { type RefObject } from "react"
-import type {
-  CanvasElements,
-  TypeDraw,
-  WarningCanvas,
-} from "../../types/CanvasType"
+import { useState, type RefObject } from "react"
+import type { TypeDraw, WarningCanvas } from "../../types/CanvasType"
+import CanvasColorPicker from "./CanvasColorPicker"
+import type { Shape } from "./Shapes/Shape"
 
 interface Props {
   canvasContext: RefObject<CanvasRenderingContext2D | null>
   canvasElement: RefObject<HTMLCanvasElement | null>
   typeOfDrawing: TypeDraw
   setTypeOfDrawing: (value: TypeDraw) => void
-  setElementsOnPage: (value: CanvasElements[]) => void
+  setElementsOnPage: (value: Shape[]) => void
   canvasStroke: string
   setCanvasStroke: (val: string) => void
   canvasStrokeWidth: number | string
   setCanvasStrokeWidth: (val: number | string) => void
   warning: WarningCanvas
   setWarning: (val: WarningCanvas) => void
+  setWarningMounted: (val: boolean) => void
 }
 
 const CanvasAside = ({
@@ -34,14 +33,8 @@ const CanvasAside = ({
   setCanvasStrokeWidth,
   warning,
   setWarning,
+  setWarningMounted,
 }: Props) => {
-  function setColor(e: React.ChangeEvent<HTMLInputElement>) {
-    if (canvasContext.current) {
-      const value = e.currentTarget.value
-      setCanvasStroke(value)
-    }
-  }
-
   function setStrokeWidth(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.currentTarget.value
     const intValue = parseInt(value, 10)
@@ -53,12 +46,9 @@ const CanvasAside = ({
             "Entered stroke width is greater than 100. What action would you like to perform",
           warningType: { type: "stroke" },
         })
+        setWarningMounted(true)
       } else if (warning.showWarning && intValue < 100) {
-        setWarning({
-          showWarning: false,
-          warningMessage: "",
-          warningType: { type: null },
-        })
+        setWarningMounted(false)
       }
       setCanvasStrokeWidth(intValue)
     } else if (value === "" && canvasContext.current) {
@@ -77,6 +67,8 @@ const CanvasAside = ({
       setElementsOnPage([])
     }
   }
+
+  const [showColor, setShowColor] = useState(false)
 
   return (
     <aside className="grid grid-rows-[auto_auto_auto_1fr] gap-5 py-2 px-3.5 bg-[#1a3144] ">
@@ -109,7 +101,7 @@ const CanvasAside = ({
           className={`absolute translate-x-0 ${typeOfDrawing === "normal" ? "translate-x-4" : "translate-x-[131%]"} bg-[#fafafa] w-[40%] h-full top-0 rounded-full transition-transform duration-300 ease-in-out`}
         ></div>
       </section>
-      <section>
+      <section className="relative z-2">
         <form
           className="flex flex-col gap-5 px-4 py-2"
           onSubmit={(e) => e.preventDefault()}
@@ -121,13 +113,11 @@ const CanvasAside = ({
             >
               Color
             </label>
-            <input
-              type="color"
-              id="color-picker"
-              value={canvasStroke}
-              onChange={setColor}
-              className="w-full h-7 cursor-pointer"
-            />
+            <button
+              className="w-full h-5 outline-2 outline-[#fafafa] outline-offset-2 rounded-2xl cursor-pointer"
+              style={{ backgroundColor: canvasStroke }}
+              onClick={() => setShowColor(true)}
+            ></button>
           </section>
           <section className="flex flex-col gap-2">
             <label
@@ -158,6 +148,12 @@ const CanvasAside = ({
             />
           </section>
         </form>
+        <CanvasColorPicker
+          setColor={setCanvasStroke}
+          color={canvasStroke}
+          showColor={showColor}
+          setShowColor={setShowColor}
+        />
       </section>
       <section className="self-end px-3">
         <button

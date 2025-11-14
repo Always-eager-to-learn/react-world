@@ -122,10 +122,10 @@ button {
 }
 
 .warning-section {
-    transform: translateX(50%);
+    transform: translateX(100%);
     opacity: 0;
     transition:
-        transform 450ms ease-in-out,
+        transform 550ms ease-in-out,
         opacity 400ms ease-in-out;
 }
 

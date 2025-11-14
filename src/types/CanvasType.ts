@@ -4,6 +4,8 @@ export interface CanvasType {
   state: "Erase" | "DrawRect" | "Line" | "Selection"
 }
 
+export type CanvasAction = "erase" | "draw" | "selection" | "none"
+
 interface TypeWarning {
   type: "stroke" | null
 }
@@ -15,6 +17,11 @@ export interface WarningCanvas {
 }
 
 export type TypeDraw = "normal" | "rough"
+export type ColorType = "rgb" | "hex" | "hsl" | "hsv"
+export type LinePoint = {
+  x: number
+  y: number
+}
 
 export function getCanvasTypes(): { [index: string]: CanvasType } {
   return {
@@ -26,10 +33,15 @@ export function getCanvasTypes(): { [index: string]: CanvasType } {
 }
 
 export interface CanvasElements {
+  index: number
   x1: number
   x2: number
   y1: number
   y2: number
+  selection: {
+    offsetX: number
+    offsetY: number
+  }
   element: null | Drawable
   type: TypeDraw
   state: CanvasType

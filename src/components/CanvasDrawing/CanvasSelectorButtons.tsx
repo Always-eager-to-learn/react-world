@@ -13,8 +13,13 @@ const CanvasSelectorButton = ({ currentState, stateSetterFunction }: Props) => {
   const jsxElement: JSX.Element[] = buttonInfo.map((element) => (
     <button
       onClick={() => stateSetterFunction(element.type)}
-      className={`outline-4 ${currentState.state === element.type.state ? "bg-[#FFEECF] text-[#002F7A] hover:text-[#ffeecf] hover:bg-[#002f7a] outline-[#59D2FE]" : "bg-[#F7F052] text-[#112B47] hover:text-[#f7f052] hover:bg-[#112b47] outline-transparent active:scale-90"} px-3 py-2 rounded-xl`}
+      className={`outline-4 bg-[#e0e0e0] hover:text-[#e0e0e0] hover:bg-[#112b47] ${currentState.state === element.type.state ? "text-[#002F7A] outline-[#59D2FE]" : "outline-transparent active:scale-90"} px-3 py-2 rounded-xl group relative`}
     >
+      <section
+        className={`-z-4 opacity-0 absolute group-hover:opacity-100 translate-y-0 group-hover:-translate-y-[170%] bg-[#121212] text-[#fafafa] scale-0 group-hover:scale-100 whitespace-nowrap -translate-x-[30%] px-3 py-2.5 rounded-full transition-opacity duration-300 ease-in-out motion-reduce:transition-none motion-reduce:hover:transition-none delay-200`}
+      >
+        <p>{element.name}</p>
+      </section>
       <DynamicIcon name={element.iconName} className="sm:w-8 sm:h-8" />
     </button>
   ))

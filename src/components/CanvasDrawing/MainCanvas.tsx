@@ -1,90 +1,92 @@
 import { useEffect, useRef, useState } from "react"
 import {
-  type CanvasElements,
   type CanvasType,
   getCanvasTypes,
   type TypeDraw,
   type WarningCanvas,
+  type CanvasAction,
 } from "../../types/CanvasType"
 import CanvasSelectorButton from "./CanvasSelectorButtons"
 import CanvasWarning from "./CanvasWarning"
 import CanvasAside from "./AsideCanvas"
 import { throttle } from "../../scripts/Throttle"
 import rough from "roughjs"
-import { RoughGenerator } from "roughjs/bin/generator"
-import { RoughCanvas } from "roughjs/bin/canvas"
+import { Rectangle } from "./Shapes/Rectangle"
+import { Line } from "./Shapes/Line"
+import { Shape } from "./Shapes/Shape"
 
 const MainCanvas = () => {
-  const getIntFromString = (value: string | number) => {
-    const width =
-      typeof value === "string" ? (value === "" ? 5 : parseInt(value)) : value
-    return width
+  const getElementAtPosition = (pos1: number, pos2: number) => {
+    return elements.filter((element) => element.elementWithinRange(pos1, pos2))
   }
 
-  // creating an element
-  const createElement = (
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-  ): CanvasElements => {
-    let roughElement = null
-    let type: TypeDraw = "normal"
-    const fix = x1
-    let six = x2
-    const fiy = y1
-    let siy = y2
-    const elementState = currentState.state
+  const setUpdateElement = (
+    element: Shape,
+    clientX: number,
+    clientY: number,
+    index: number,
+  ) => {
+    element.updateElement(clientX, clientY, currentState)
+    updateElementState(element, index)
+  }
 
-    switch (typeOfDraw) {
-      case "rough": {
-        type = "rough"
-        if (elementState === "Line") {
-          roughElement = roughGenerator.current.line(fix, fiy, six, siy, {
-            stroke: canvasColor,
-            strokeWidth: getIntFromString(canvasStroke),
-          })
-        } else if (elementState === "DrawRect") {
-          six = six - fix
-          siy = siy - fiy
-          roughElement = roughGenerator.current.rectangle(fix, fiy, six, siy, {
-            stroke: canvasColor,
-            strokeWidth: getIntFromString(canvasStroke),
-          })
-        }
-        break
-      }
-      case "normal": {
-        if (elementState === "DrawRect") {
-          six = six - fix
-          siy = siy - fiy
-        }
-        break
-      }
-    }
+  const updateElementState = (element: Shape, index: number) => {
+    const copyElements = [...elements]
+    copyElements[index] = element
+    setElements(copyElements)
+  }
 
-    return {
-      x1: fix,
-      y1: fiy,
-      x2: six,
-      y2: siy,
-      element: roughElement,
-      type: type,
-      state: currentState,
-      strokeColor: canvasColor,
-      strokeWidth: canvasStroke,
-    }
+  const addToElements = (shape: Shape) => {
+    shape.createElement()
+    setElements((prev) => [...prev, shape])
   }
 
   const startDrawing = throttle(function (
     event: React.MouseEvent<HTMLCanvasElement>,
   ) {
-    const { offsetX, offsetY } = event.nativeEvent
-    setIsDrawing(true)
-
-    const element = createElement(offsetX, offsetY, offsetX, offsetY)
-    if (element) {
-      setElements((prev) => [...prev, element])
+    const { clientX, clientY } = event.nativeEvent
+    const id = elements.length
+    switch (currentState.state) {
+      case "DrawRect": {
+        setAction("draw")
+        const rectangle = new Rectangle(
+          clientX,
+          clientY,
+          clientX,
+          clientY,
+          typeOfDraw,
+          canvasColor,
+          canvasStroke,
+          id,
+        )
+        addToElements(rectangle)
+        break
+      }
+      case "Line": {
+        setAction("draw")
+        const line = new Line(
+          clientX,
+          clientY,
+          clientX,
+          clientY,
+          typeOfDraw,
+          canvasColor,
+          canvasStroke,
+          id,
+        )
+        addToElements(line)
+        break
+      }
+      case "Selection": {
+        const element = getElementAtPosition(clientX, clientY)
+        const selectedElement = element.pop()
+        if (selectedElement) {
+          selectedElement.setOffset(clientX, clientY)
+          setAction("selection")
+          setSelectedElements(selectedElement)
+        }
+        break
+      }
     }
     event.nativeEvent.preventDefault()
   }, 20)
@@ -92,23 +94,32 @@ const MainCanvas = () => {
   const drawing = throttle(function (
     event: React.MouseEvent<HTMLCanvasElement>,
   ) {
-    const { offsetX, offsetY } = event.nativeEvent
-    if (isDrawing) {
+    const { clientX, clientY } = event.nativeEvent
+    if (action === "draw") {
       const index = elements.length - 1
       if (index < 0) return
 
-      const { x1, y1 } = elements[index]
-      const updatedElement = createElement(x1, y1, offsetX, offsetY)
-
-      const copyElements = [...elements]
-      copyElements[index] = updatedElement
-      setElements(copyElements)
+      const element = elements[index]
+      setUpdateElement(element, clientX, clientY, index)
+    } else if (action === "selection") {
+      if (selectedElements) {
+        const index = selectedElements.getIndex()
+        const element = elements[index]
+        setUpdateElement(element, clientX, clientY, index)
+        event.currentTarget.style.cursor = "move"
+      }
     }
   }, 20)
 
-  const endDrawing = throttle(function () {
-    if (isDrawing) {
-      setIsDrawing(false)
+  const endDrawing = throttle(function (
+    event: React.MouseEvent<HTMLCanvasElement>,
+  ) {
+    if (action !== "none") {
+      setAction("none")
+      if (selectedElements) {
+        event.currentTarget.style.cursor = "default"
+      }
+      setSelectedElements(null)
     }
   }, 20)
 
@@ -125,24 +136,19 @@ const MainCanvas = () => {
     if (val) {
       setCanvasStroke(val)
     }
-    setWarning({
-      showWarning: false,
-      warningMessage: "",
-      warningType: { type: null },
-    })
+    setWarningMounted(false)
   }
 
-  const [isDrawing, setIsDrawing] = useState(false)
+  const [action, setAction] = useState<CanvasAction>("draw")
   const canvasContext = useRef<CanvasRenderingContext2D | null>(null)
-  const roughCanvas = useRef<RoughCanvas | null>(null)
   const canvasElement = useRef<HTMLCanvasElement>(null)
   const containerElement = useRef<HTMLDivElement>(null)
   const types = getCanvasTypes()
   const [currentState, setCurrentState] = useState<CanvasType>(types.line)
   const [typeOfDraw, setTypeOfDraw] = useState<TypeDraw>("normal")
-  const [elements, setElements] = useState<CanvasElements[]>([])
-  const roughGenerator = useRef<RoughGenerator>(rough.generator())
-  const [canvasColor, setCanvasColor] = useState<string>("black")
+  const [elements, setElements] = useState<Shape[]>([])
+  const [selectedElements, setSelectedElements] = useState<Shape | null>(null)
+  const [canvasColor, setCanvasColor] = useState<string>("#111")
   const [canvasStroke, setCanvasStroke] = useState<number | string>(
     canvasContext.current?.lineWidth || 5,
   )
@@ -151,6 +157,7 @@ const MainCanvas = () => {
     warningMessage: "",
     warningType: { type: null },
   })
+  const [warningMounted, setWarningMounted] = useState(false)
   const messages = warning.warningMessage.split(".")
   const jsxElements = messages.map((element) => (
     <p className="max-sm:text-base sm:text-lg">{element}</p>
@@ -188,7 +195,9 @@ const MainCanvas = () => {
 
       // setting contexts
       canvasContext.current = context
-      roughCanvas.current = rough.canvas(canvas)
+      Shape.canvas = context
+      Shape.roughCanvas = rough.canvas(canvas)
+      Shape.roughgenerator = rough.generator()
     }
 
     return () => {
@@ -204,43 +213,16 @@ const MainCanvas = () => {
         canvasElement.current.clientWidth,
         canvasElement.current.clientHeight,
       )
-      const canvas = canvasContext.current
       if (elements.length > 0) {
         elements.forEach((element) => {
-          switch (element.type) {
-            case "rough": {
-              if (element.element && roughCanvas.current) {
-                roughCanvas.current.draw(element.element)
-              }
-              break
-            }
-            case "normal": {
-              if (canvas) {
-                const width = getIntFromString(element.strokeWidth)
-                canvas.strokeStyle = element.strokeColor
-                canvas.lineWidth = width
-                canvas.beginPath()
-                if (element.state.state === "Line") {
-                  canvas.moveTo(element.x1, element.y1)
-                  canvas.lineTo(element.x1, element.y1)
-                  canvas.lineTo(element.x2, element.y2)
-                  canvas.closePath()
-                } else if (element.state.state === "DrawRect") {
-                  canvas.rect(element.x1, element.y1, element.x2, element.y2)
-                }
-                canvas.closePath()
-                canvas.stroke()
-              }
-              break
-            }
-          }
+          element.draw()
         })
       }
     }
   }, [elements])
 
   return (
-    <main className="grow grid grid-cols-[6fr_1.7fr]">
+    <main className="grow grid grid-cols-[6fr_1.7fr] overflow-hidden">
       <section>
         <div className="h-full w-full relative" ref={containerElement}>
           <canvas
@@ -251,7 +233,7 @@ const MainCanvas = () => {
             onMouseUp={endDrawing}
             onMouseLeave={endDrawing}
           ></canvas>
-          <section className="absolute bottom-4 left-[40%] translate-x-[50%] bg-[#022F40] p-4 rounded-3xl">
+          <section className="fixed bottom-4 left-[30%] translate-x-[50%] bg-[#022F40] p-4 rounded-3xl">
             <CanvasSelectorButton
               currentState={currentState}
               stateSetterFunction={setState}
@@ -271,8 +253,16 @@ const MainCanvas = () => {
         setCanvasStrokeWidth={setCanvasStroke}
         warning={warning}
         setWarning={setWarning}
+        setWarningMounted={setWarningMounted}
       />
-      <CanvasWarning warning={warning} setWarning={setWarning}>
+      <CanvasWarning
+        warning={warning}
+        setWarning={setWarning}
+        isMounted={warningMounted}
+        setIsMounted={setWarningMounted}
+        delayTime={40}
+        sliderColor="bg-[#3B429F]"
+      >
         {warning.showWarning ? (
           <>
             <section className="px-4 py-2">{jsxElements}</section>
