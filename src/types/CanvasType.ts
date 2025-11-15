@@ -23,6 +23,17 @@ export type LinePoint = {
   y: number
 }
 
+export interface Color {
+  val1: string
+  val2: string
+  val3: string
+  min: number
+  max: number
+  value1: number
+  value2: number
+  value3: number
+}
+
 export function getCanvasTypes(): { [index: string]: CanvasType } {
   return {
     erase: { state: "Erase" },

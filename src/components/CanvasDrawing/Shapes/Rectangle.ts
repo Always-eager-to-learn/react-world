@@ -19,6 +19,8 @@ export class Rectangle extends Shape {
   element: null | Drawable
   elementState: CanvasType
   focusedState: boolean
+  hoveredFocusState: boolean
+  hoveredFocusSet: boolean
 
   constructor(
     x1: number,
@@ -46,11 +48,17 @@ export class Rectangle extends Shape {
     this.element = null
     this.elementState = { state: "DrawRect" }
     this.focusedState = false
+    this.hoveredFocusState = false
+    this.hoveredFocusSet = false
   }
 
   private createDrawable(): void {
     if (Shape.roughgenerator) {
-      const color = this.focusedState ? Shape.focusedColor : this.strokeColor
+      const color = this.focusedState
+        ? Shape.focusedColor
+        : this.hoveredFocusState
+          ? Shape.withinFocusColor
+          : this.strokeColor
       this.element = Shape.roughgenerator.rectangle(
         this.x1,
         this.y1,
@@ -108,7 +116,9 @@ export class Rectangle extends Shape {
           const width = getIntFromString(this.strokeWidth)
           canvas.strokeStyle = this.focusedState
             ? Shape.focusedColor
-            : this.strokeColor
+            : this.hoveredFocusState
+              ? Shape.withinFocusColor
+              : this.strokeColor
           canvas.lineWidth = width
           canvas.beginPath()
           canvas.rect(this.x1, this.y1, this.width, this.height)
@@ -137,9 +147,29 @@ export class Rectangle extends Shape {
     const maxX = Math.max(this.x1, this.x1 + this.width)
     const minY = Math.min(this.y1, this.y1 + this.height)
     const maxY = Math.max(this.y1, this.y1 + this.height)
-    return (
+    const condition =
       clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY
-    )
+    if (!condition && this.hoveredFocusState) {
+      this.hoveredFocusState = false
+      this.createDrawable()
+    }
+    return condition
+  }
+
+  hoveredFocus(): void {
+    if (!this.hoveredFocusState) {
+      this.hoveredFocusState = true
+      this.createDrawable()
+    }
+  }
+
+  getHoveredFocus(): boolean {
+    return this.hoveredFocusState
+  }
+
+  revertHoveredFocus(): void {
+    this.hoveredFocusState = false
+    this.createDrawable()
   }
 
   setOffset(clientX: number, clientY: number): void {

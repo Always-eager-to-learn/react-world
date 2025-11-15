@@ -1,9 +1,9 @@
 import { ChevronLeft, CircleX } from "lucide-react"
 import { Link } from "react-router-dom"
-import HeaderInputCanvas from "./HeaderInputCanvas"
+import HeaderInputCanvas from "./CanvasInput/HeaderInputCanvas"
 import { useState, type RefObject } from "react"
 import type { TypeDraw, WarningCanvas } from "../../types/CanvasType"
-import CanvasColorPicker from "./CanvasColorPicker"
+import CanvasColorPicker from "./CanvasInput/CanvasColorPicker"
 import type { Shape } from "./Shapes/Shape"
 
 interface Props {

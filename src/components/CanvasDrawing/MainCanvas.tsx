@@ -6,7 +6,7 @@ import {
   type WarningCanvas,
   type CanvasAction,
 } from "../../types/CanvasType"
-import CanvasSelectorButton from "./CanvasSelectorButtons"
+import CanvasSelectorButton from "./CanvasInput/CanvasSelectorButtons"
 import CanvasWarning from "./CanvasWarning"
 import CanvasAside from "./AsideCanvas"
 import { throttle } from "../../scripts/Throttle"
@@ -16,47 +16,6 @@ import { Line } from "./Shapes/Line"
 import { Shape } from "./Shapes/Shape"
 
 const MainCanvas = () => {
-  const getElementAtPosition = (pos1: number, pos2: number) => {
-    return elements.filter((element) => element.elementWithinRange(pos1, pos2))
-  }
-
-  const setUpdateElement = (
-    element: Shape,
-    clientX: number,
-    clientY: number,
-    index: number,
-  ) => {
-    element.updateElement(clientX, clientY, currentState)
-    updateElementState(element, index)
-  }
-
-  const updateElementState = (element: Shape, index: number) => {
-    const copyElements = [...elements]
-    copyElements[index] = element
-    setElements(copyElements)
-  }
-
-  const addToElements = (shape: Shape) => {
-    shape.createElement()
-    setElements((prev) => [...prev, shape])
-  }
-
-  const drawElements = (elements: Shape[]) => {
-    if (canvasContext.current && canvasElement.current) {
-      canvasContext.current.clearRect(
-        0,
-        0,
-        canvasElement.current.clientWidth,
-        canvasElement.current.clientHeight,
-      )
-      if (elements.length > 0) {
-        elements.forEach((element) => {
-          element.draw()
-        })
-      }
-    }
-  }
-
   const startDrawing = throttle(function (
     event: React.MouseEvent<HTMLCanvasElement>,
   ) {
@@ -75,7 +34,7 @@ const MainCanvas = () => {
           canvasStroke,
           id,
         )
-        addToElements(rectangle)
+        Shape.addShape(rectangle, setElements)
         break
       }
       case "Line": {
@@ -90,11 +49,11 @@ const MainCanvas = () => {
           canvasStroke,
           id,
         )
-        addToElements(line)
+        Shape.addShape(line, setElements)
         break
       }
       case "Selection": {
-        const element = getElementAtPosition(clientX, clientY)
+        const element = Shape.getElementAtPosition(clientX, clientY, elements)
         const selectedElement = element.pop()
         if (selectedElement) {
           selectedElement.setOffset(clientX, clientY)
@@ -116,15 +75,48 @@ const MainCanvas = () => {
       const index = elements.length - 1
       if (index < 0) return
 
-      const element = elements[index]
-      setUpdateElement(element, clientX, clientY, index)
+      Shape.setUpdateElement(
+        elements,
+        clientX,
+        clientY,
+        index,
+        currentState,
+        setElements,
+      )
     } else if (action === "selection") {
       if (selectedElements) {
         const index = selectedElements.getIndex()
-        const element = elements[index]
-        setUpdateElement(element, clientX, clientY, index)
+        Shape.setUpdateElement(
+          elements,
+          clientX,
+          clientY,
+          index,
+          currentState,
+          setElements,
+        )
         event.currentTarget.style.cursor = "move"
       }
+    } else if (currentState.state === "Selection") {
+      const positionElements = Shape.getElementAtPosition(
+        clientX,
+        clientY,
+        elements,
+      )
+      if (positionElements.length > 0) {
+        prevLength.current = positionElements.length
+        const selectedElement = positionElements.pop()
+        Shape.revertHoveredFocusFromElements(positionElements)
+        if (selectedElement) {
+          selectedElement.hoveredFocus()
+        }
+        Shape.drawElements(elements)
+      } else if (prevLength.current > positionElements.length) {
+        prevLength.current = 0
+        Shape.drawElements(elements)
+      }
+    } else {
+      Shape.revertHoveredFocusFromElements(elements)
+      Shape.drawElements(elements)
     }
   }, 20)
 
@@ -136,9 +128,12 @@ const MainCanvas = () => {
       if (selectedElements) {
         event.currentTarget.style.cursor = "default"
         selectedElements.revertFocus()
-        drawElements(elements)
+        Shape.drawElements(elements)
       }
       setSelectedElements(null)
+    } else if (currentState.state === "Selection") {
+      Shape.revertHoveredFocusFromElements(elements)
+      Shape.drawElements(elements)
     }
   }, 20)
 
@@ -158,6 +153,12 @@ const MainCanvas = () => {
     setWarningMounted(false)
   }
 
+  function selectOption(event: React.KeyboardEvent<HTMLCanvasElement>) {
+    if (event.key === "R") {
+      console.log("Pressed")
+    }
+  }
+
   const [action, setAction] = useState<CanvasAction>("draw")
   const canvasContext = useRef<CanvasRenderingContext2D | null>(null)
   const canvasElement = useRef<HTMLCanvasElement>(null)
@@ -167,6 +168,7 @@ const MainCanvas = () => {
   const [typeOfDraw, setTypeOfDraw] = useState<TypeDraw>("normal")
   const [elements, setElements] = useState<Shape[]>([])
   const [selectedElements, setSelectedElements] = useState<Shape | null>(null)
+  const prevLength = useRef(0)
   const [canvasColor, setCanvasColor] = useState<string>("#111")
   const [canvasStroke, setCanvasStroke] = useState<number | string>(
     canvasContext.current?.lineWidth || 5,
@@ -214,9 +216,7 @@ const MainCanvas = () => {
 
       // setting contexts
       canvasContext.current = context
-      Shape.canvas = context
-      Shape.roughCanvas = rough.canvas(canvas)
-      Shape.roughgenerator = rough.generator()
+      Shape.setContext(context, rough.canvas(canvas), canvas, rough.generator())
     }
 
     return () => {
@@ -225,7 +225,7 @@ const MainCanvas = () => {
   }, [])
 
   useEffect(() => {
-    drawElements(elements)
+    Shape.drawElements(elements)
   }, [elements])
 
   return (
@@ -239,6 +239,7 @@ const MainCanvas = () => {
             onMouseMove={drawing}
             onMouseUp={endDrawing}
             onMouseLeave={endDrawing}
+            onKeyDown={selectOption}
           ></canvas>
           <section className="fixed bottom-4 left-[30%] translate-x-[50%] bg-[#022F40] p-4 rounded-3xl">
             <CanvasSelectorButton

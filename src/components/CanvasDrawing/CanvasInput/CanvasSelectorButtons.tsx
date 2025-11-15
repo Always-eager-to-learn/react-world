@@ -1,6 +1,6 @@
 import type { JSX } from "react"
-import type { CanvasType } from "../../types/CanvasType"
-import { canvasButtonInfo } from "../../data/canvasButtons"
+import type { CanvasType } from "../../../types/CanvasType"
+import { canvasButtonInfo } from "../../../data/canvasButtons"
 import { DynamicIcon } from "lucide-react/dynamic"
 
 interface Props {

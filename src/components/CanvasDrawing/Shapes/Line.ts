@@ -20,6 +20,8 @@ export class Line extends Shape {
   element: null | Drawable
   elementState: CanvasType
   focusedState: boolean
+  hoveredFocusState: boolean
+  hoveredFocusSet: boolean
 
   constructor(
     x1: number,
@@ -47,11 +49,17 @@ export class Line extends Shape {
     this.element = null
     this.elementState = { state: "Line" }
     this.focusedState = false
+    this.hoveredFocusState = false
+    this.hoveredFocusSet = false
   }
 
   private createDrawable(): void {
     if (Shape.roughgenerator) {
-      const color = this.focusedState ? Shape.focusedColor : this.strokeColor
+      const color = this.focusedState
+        ? Shape.focusedColor
+        : this.hoveredFocusState
+          ? Shape.withinFocusColor
+          : this.strokeColor
       this.element = Shape.roughgenerator.line(
         this.x1,
         this.y1,
@@ -111,7 +119,9 @@ export class Line extends Shape {
           const width = getIntFromString(this.strokeWidth)
           canvas.strokeStyle = this.focusedState
             ? Shape.focusedColor
-            : this.strokeColor
+            : this.hoveredFocusState
+              ? Shape.withinFocusColor
+              : this.strokeColor
           canvas.lineWidth = width
           canvas.beginPath()
           canvas.moveTo(this.x1, this.y1)
@@ -132,6 +142,22 @@ export class Line extends Shape {
     }
   }
 
+  hoveredFocus(): void {
+    if (!this.hoveredFocusState) {
+      this.hoveredFocusState = true
+      this.createDrawable()
+    }
+  }
+
+  getHoveredFocus(): boolean {
+    return this.hoveredFocusState
+  }
+
+  revertHoveredFocus(): void {
+    this.hoveredFocusState = false
+    this.createDrawable()
+  }
+
   revertFocus(): void {
     this.focusedState = false
     this.createDrawable()
@@ -143,6 +169,11 @@ export class Line extends Shape {
     const c: LinePoint = { x: clientX, y: clientY }
     const offset =
       this.distance(a, b) - (this.distance(a, c) + this.distance(b, c))
+    const condition = Math.abs(offset) < 1
+    if (!condition && this.hoveredFocusState) {
+      this.hoveredFocusState = false
+      this.createDrawable()
+    }
     return Math.abs(offset) < 1
   }
 

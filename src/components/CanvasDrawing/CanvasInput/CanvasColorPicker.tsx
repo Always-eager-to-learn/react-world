@@ -2,8 +2,15 @@ import clsx from "clsx"
 import { X } from "lucide-react"
 import { useRef, useState, type JSX } from "react"
 import { HexAlphaColorPicker, HexColorInput } from "react-colorful"
-import { type ColorType } from "../../types/CanvasType"
-import { colord, type RgbColor, type HslColor, type HsvColor } from "colord"
+import { type ColorType } from "../../../types/CanvasType"
+import {
+  colord,
+  type RgbColor,
+  type HslColor,
+  type HsvColor,
+  type RgbaColor,
+} from "colord"
+import CanvasPickerInput from "./CanvasPickerInput"
 
 interface Props {
   color: string
@@ -28,11 +35,30 @@ const CanvasColorPicker = ({
     setColor(hexColor)
   }
 
+  function setInput(event: React.ChangeEvent<HTMLInputElement>, index: number) {
+    if (colorType === "rgb") {
+      const result = event.currentTarget.value
+      const value = parseInt(result, 10)
+      if (value >= 0 && value <= 255) {
+        colorValue.current[index] = value
+        const [r, g, b, a] = colorValue.current
+        setColor(
+          colord({
+            r,
+            g,
+            b,
+            a,
+          }).toHex(),
+        )
+      }
+    }
+  }
+
   function setColorInput() {
     let returnColor
     switch (colorType) {
       case "hsl": {
-        returnColor = colord(color).toHslString()
+        returnColor = colord(color).toHsl()
         break
       }
       case "hsv": {
@@ -42,23 +68,11 @@ const CanvasColorPicker = ({
         break
       }
       case "rgb": {
-        returnColor = colord(color).toRgbString()
+        returnColor = colord(color).toRgb()
       }
     }
 
     return returnColor
-  }
-
-  function setDefaultColor(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.currentTarget.value
-    switch (colorType) {
-      case "rgb": {
-        if (!typingState.current) {
-          typingState.current = true
-        }
-        const regex = "rgb(a){0,1}(([0-255], [0-255], [0-255], (0-1){0,1}))"
-      }
-    }
   }
 
   const styles = clsx({
@@ -71,7 +85,7 @@ const CanvasColorPicker = ({
   })
 
   const [colorType, setColorType] = useState<ColorType>("hex")
-  const typingState = useRef(false)
+  const colorValue = useRef<number[]>([])
   let inputColorPicker: JSX.Element | null = null
   switch (colorType) {
     case "hex": {
@@ -86,13 +100,15 @@ const CanvasColorPicker = ({
       )
       break
     }
-    default: {
-      const color = setColorInput()
+    case "rgb": {
+      const color = setColorInput() as RgbaColor
+      const { r, g, b, a } = color
+      colorValue.current = [r, g, b, a]
       inputColorPicker = (
-        <input
-          value={color}
-          onChange={setDefaultColor}
-          className="w-full outline-2 outline-[#121212] px-1.5 py-0.5 rounded-xl"
+        <CanvasPickerInput
+          type={colorType}
+          value={colorValue.current}
+          setInput={setInput}
         />
       )
     }
@@ -114,7 +130,7 @@ const CanvasColorPicker = ({
         <HexAlphaColorPicker color={color} onChange={setColor} />
       </section>
       <section className="col-start-1 row-start-2 col-end-3">
-        <form className="flex gap-3">
+        <form className={`flex gap-3 flex-col`}>
           <label htmlFor="color-picker" className="h-0 w-0 overflow-hidden">
             Select a color
           </label>
