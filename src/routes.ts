@@ -12,6 +12,7 @@ import HomePage from "./pages/Home/HomePage"
 import { headerIconsArray } from "./data/navigationLinks"
 import Tasks from "./pages/Tasks"
 import DrawingCanvas from "./pages/DrawingCanvas"
+import VirtualWorld from "./pages/VirtualWorld"
 
 function createRoutes() {
   const routes = createBrowserRouter([
@@ -49,6 +50,7 @@ function createRoutes() {
         { path: "profileview", Component: ProfileCarousel },
         { path: "todoapp", Component: Tasks },
         { path: "drawingcanvas", Component: DrawingCanvas },
+        { path: "virtualworld", Component: VirtualWorld },
       ],
     },
     {

@@ -19,6 +19,7 @@ export const icons: { [key: string]: IconName } = {
   userRound: "circle-user-round",
   notebook: "notebook",
   brush: "brush",
+  waypoints: "waypoints",
 }
 
 export const items = [
@@ -97,6 +98,14 @@ export const items = [
     description: "A project utilizing the canvas api in react.",
     icon: icons.brush,
     locationToGo: "/projects/drawingcanvas",
+    type: ItemTypes.Project,
+  },
+  {
+    name: "Virtual World",
+    description:
+      "A project utilizing the canvas api in react to design a virtual world.",
+    icon: icons.waypoints,
+    locationToGo: "/projects/virtualworld",
     type: ItemTypes.Project,
   },
 ]
