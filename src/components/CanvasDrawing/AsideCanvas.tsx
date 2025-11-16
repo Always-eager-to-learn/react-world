@@ -161,7 +161,7 @@ const CanvasAside = ({
           onClick={clearCanvas}
         >
           <CircleX className="sm:w-8 sm:h-8 max-sm:w-6 max-sm:h-6" />
-          Clear Canvas
+          Clear Canvas (C)
         </button>
       </section>
     </aside>

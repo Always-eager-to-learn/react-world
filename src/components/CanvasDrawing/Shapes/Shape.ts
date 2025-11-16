@@ -1,5 +1,9 @@
 import type { RoughCanvas } from "roughjs/bin/canvas"
-import { type CanvasType } from "../../../types/CanvasType"
+import type {
+  CanvasType,
+  MouseLocation,
+  SetCursorOptions,
+} from "../../../types/CanvasType"
 import type { RoughGenerator } from "roughjs/bin/generator"
 
 export abstract class Shape {
@@ -22,7 +26,9 @@ export abstract class Shape {
     Shape.roughgenerator = generator
   }
 
-  static drawElements(elements: Shape[]) {
+  static clearCanvas(
+    setElements?: (value: React.SetStateAction<Shape[]>) => void,
+  ) {
     if (Shape.canvas && Shape.canvasElement) {
       Shape.canvas.clearRect(
         0,
@@ -30,6 +36,15 @@ export abstract class Shape {
         Shape.canvasElement.clientWidth,
         Shape.canvasElement.clientHeight,
       )
+      if (setElements !== undefined) {
+        setElements([])
+      }
+    }
+  }
+
+  static drawElements(elements: Shape[]) {
+    if (Shape.canvas && Shape.canvasElement) {
+      Shape.clearCanvas()
       if (elements.length > 0) {
         elements.forEach((element) => {
           element.draw()
@@ -77,6 +92,48 @@ export abstract class Shape {
     return elements.filter((element) => element.elementWithinRange(pos1, pos2))
   }
 
+  static cursorAtPosition(value: MouseLocation): string {
+    let mouseStyle = ""
+    switch (value) {
+      case "bl":
+      case "tr": {
+        mouseStyle = "nesw-resize"
+        break
+      }
+      case "br":
+      case "tl": {
+        mouseStyle = "nwse-resize"
+        break
+      }
+      case "start": {
+        mouseStyle = "e-resize"
+        break
+      }
+      case "end": {
+        mouseStyle = "w-resize"
+        break
+      }
+      case "inside": {
+        mouseStyle = "move"
+        break
+      }
+    }
+    return mouseStyle
+  }
+
+  static setCursor(
+    event: React.MouseEvent<HTMLCanvasElement>,
+    options: SetCursorOptions = {},
+  ): void {
+    if (options.element) {
+      event.currentTarget.style.cursor = Shape.cursorAtPosition(
+        options.element.getPosition(),
+      )
+    } else {
+      event.currentTarget.style.cursor = options.value || "default"
+    }
+  }
+
   abstract createElement(): void
   abstract updateElement(
     clientX: number,
@@ -92,4 +149,18 @@ export abstract class Shape {
   abstract hoveredFocus(): void
   abstract getHoveredFocus(): boolean
   abstract revertHoveredFocus(): void
+  abstract findNearPoint(
+    mousex: number,
+    mousey: number,
+    options?: { offset: number },
+  ): void
+  abstract pointFinder(
+    mousex: number,
+    mousey: number,
+    x: number,
+    y: number,
+    offset: number,
+  ): boolean
+  abstract getPosition(): MouseLocation
+  abstract setNewCoordinates(mousex: number, mousey: number): void
 }

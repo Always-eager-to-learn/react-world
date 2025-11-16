@@ -1,5 +1,9 @@
 import type { Drawable } from "roughjs/bin/core"
-import type { CanvasType, TypeDraw } from "../../../types/CanvasType"
+import type {
+  CanvasType,
+  MouseLocation,
+  TypeDraw,
+} from "../../../types/CanvasType"
 import { Shape } from "./Shape"
 import { getIntFromString } from "../../../scripts/Number"
 import { type LinePoint } from "../../../types/CanvasType"
@@ -22,6 +26,10 @@ export class Line extends Shape {
   focusedState: boolean
   hoveredFocusState: boolean
   hoveredFocusSet: boolean
+  mouseLocation: MouseLocation
+  start: MouseLocation
+  end: MouseLocation
+  inside: MouseLocation
 
   constructor(
     x1: number,
@@ -51,6 +59,10 @@ export class Line extends Shape {
     this.focusedState = false
     this.hoveredFocusState = false
     this.hoveredFocusSet = false
+    this.mouseLocation = null
+    this.start = "start"
+    this.end = "end"
+    this.inside = "inside"
   }
 
   private createDrawable(): void {
@@ -170,6 +182,9 @@ export class Line extends Shape {
     const offset =
       this.distance(a, b) - (this.distance(a, c) + this.distance(b, c))
     const condition = Math.abs(offset) < 1
+    if (condition && this.mouseLocation === null) {
+      this.mouseLocation = this.inside
+    }
     if (!condition && this.hoveredFocusState) {
       this.hoveredFocusState = false
       this.createDrawable()
@@ -189,7 +204,63 @@ export class Line extends Shape {
     }
   }
 
+  pointFinder(
+    mousex: number,
+    mousey: number,
+    x: number,
+    y: number,
+    offset: number,
+  ): boolean {
+    return Math.abs(mousex - x) < offset && Math.abs(mousey - y) < offset
+  }
+
+  findNearPoint(
+    mousex: number,
+    mousey: number,
+    options: { offset: number } = { offset: 7 },
+  ): void {
+    const t1 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x1,
+      this.y1,
+      options.offset,
+    )
+      ? this.start
+      : null
+    const t2 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x2,
+      this.y2,
+      options.offset,
+    )
+      ? this.end
+      : null
+
+    this.mouseLocation = t1 || t2 || this.inside
+  }
+
+  setNewCoordinates(mousex: number, mousey: number): void {
+    switch (this.mouseLocation) {
+      case "start": {
+        this.x1 = mousex
+        this.y1 = mousey
+        break
+      }
+      case "end": {
+        this.x2 = mousex
+        this.y2 = mousey
+      }
+    }
+    this.createDrawable()
+  }
+
   getIndex(): number {
     return this.index
+  }
+
+  getPosition(): MouseLocation {
+    return this.mouseLocation
   }
 }

@@ -1,10 +1,11 @@
 import type { Drawable } from "roughjs/bin/core"
+import { Shape } from "../components/CanvasDrawing/Shapes/Shape"
 
 export interface CanvasType {
   state: "Erase" | "DrawRect" | "Line" | "Selection"
 }
 
-export type CanvasAction = "erase" | "draw" | "selection" | "none"
+export type CanvasAction = "erase" | "draw" | "selection" | "none" | "resize"
 
 interface TypeWarning {
   type: "stroke" | null
@@ -22,6 +23,16 @@ export type LinePoint = {
   x: number
   y: number
 }
+
+export type MouseLocation =
+  | "tl"
+  | "tr"
+  | "bl"
+  | "br"
+  | "inside"
+  | "start"
+  | "end"
+  | null
 
 export interface Color {
   val1: string
@@ -58,4 +69,9 @@ export interface CanvasElements {
   state: CanvasType
   strokeColor: string
   strokeWidth: number | string
+}
+
+export interface SetCursorOptions {
+  element?: Shape
+  value?: string
 }

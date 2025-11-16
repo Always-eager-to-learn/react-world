@@ -13,12 +13,12 @@ const types = getCanvasTypes()
 
 export const canvasButtonInfo = [
   {
-    name: "Select Objects",
+    name: "Select Objects (S)",
     iconName: icons.selection,
     type: types.select,
   },
   {
-    name: "Draw Rectangle",
+    name: "Draw Rectangle (R)",
     iconName: icons.drawRect,
     type: types.drawRect,
   },

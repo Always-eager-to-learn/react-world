@@ -1,5 +1,9 @@
 import type { Drawable } from "roughjs/bin/core"
-import type { CanvasType, TypeDraw } from "../../../types/CanvasType"
+import type {
+  CanvasType,
+  MouseLocation,
+  TypeDraw,
+} from "../../../types/CanvasType"
 import { Shape } from "./Shape"
 import { getIntFromString } from "../../../scripts/Number"
 
@@ -21,6 +25,12 @@ export class Rectangle extends Shape {
   focusedState: boolean
   hoveredFocusState: boolean
   hoveredFocusSet: boolean
+  mouseLocation: MouseLocation
+  t1: MouseLocation
+  t2: MouseLocation
+  t3: MouseLocation
+  t4: MouseLocation
+  inside: MouseLocation
 
   constructor(
     x1: number,
@@ -50,6 +60,12 @@ export class Rectangle extends Shape {
     this.focusedState = false
     this.hoveredFocusState = false
     this.hoveredFocusSet = false
+    this.mouseLocation = null
+    this.t1 = "tl"
+    this.t2 = "tr"
+    this.t3 = "bl"
+    this.t4 = "br"
+    this.inside = "inside"
   }
 
   private createDrawable(): void {
@@ -149,11 +165,133 @@ export class Rectangle extends Shape {
     const maxY = Math.max(this.y1, this.y1 + this.height)
     const condition =
       clientX >= minX && clientX <= maxX && clientY >= minY && clientY <= maxY
+    if (condition && this.mouseLocation === null) {
+      this.mouseLocation = this.inside
+    }
     if (!condition && this.hoveredFocusState) {
       this.hoveredFocusState = false
       this.createDrawable()
     }
     return condition
+  }
+
+  pointFinder(
+    mousex: number,
+    mousey: number,
+    x: number,
+    y: number,
+    offset: number,
+  ): boolean {
+    return Math.abs(mousex - x) < offset && Math.abs(mousey - y) < offset
+  }
+
+  findNearPoint(
+    mousex: number,
+    mousey: number,
+    options: { offset: number } = { offset: 8 },
+  ): void {
+    const t1 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x1,
+      this.y1,
+      options.offset,
+    )
+      ? this.t1
+      : null
+    const t2 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x1 + this.width,
+      this.y1,
+      options.offset,
+    )
+      ? this.t2
+      : null
+    const t3 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x1,
+      this.y1 + this.height,
+      options.offset,
+    )
+      ? this.t3
+      : null
+    const t4 = this.pointFinder(
+      mousex,
+      mousey,
+      this.x1 + this.width,
+      this.y1 + this.height,
+      options.offset,
+    )
+      ? this.t4
+      : null
+
+    this.mouseLocation = t1 || t2 || t3 || t4 || this.inside
+  }
+
+  setNewCoordinates(mousex: number, mousey: number): void {
+    const xdiff = mousex - this.x1
+    const ydiff = mousey - this.y1
+    switch (this.mouseLocation) {
+      case "tl": {
+        let width = 0
+        let height = 0
+        if (mousex > this.x1 && mousey > this.y1) {
+          width = this.width - xdiff
+          height = this.height - ydiff
+        } else if (mousex > this.x1) {
+          width = this.width - xdiff
+          height = this.height + Math.abs(ydiff)
+        } else if (mousey > this.y1) {
+          width = this.width + Math.abs(xdiff)
+          height = this.height - ydiff
+        } else {
+          width = this.width + Math.abs(xdiff)
+          height = this.height + Math.abs(ydiff)
+        }
+        this.x1 = mousex
+        this.y1 = mousey
+        this.width = width
+        this.height = height
+        break
+      }
+      case "tr": {
+        const width = xdiff
+        let height = 0
+        if (mousey > this.y1) {
+          height = this.height - ydiff
+        } else {
+          height = this.height + Math.abs(ydiff)
+        }
+        this.y1 = mousey
+        this.width = width
+        this.height = height
+        break
+      }
+
+      case "bl": {
+        const height = ydiff
+        let width = 0
+        if (mousex > this.x1) {
+          width = this.width - xdiff
+        } else {
+          width = this.width + Math.abs(xdiff)
+        }
+        this.x1 = mousex
+        this.width = width
+        this.height = height
+        break
+      }
+
+      case "br": {
+        const width = mousex - (this.x1 + this.width)
+        const height = mousey - (this.y1 + this.height)
+        this.width += width
+        this.height += height
+      }
+    }
+    this.createDrawable()
   }
 
   hoveredFocus(): void {
@@ -181,5 +319,9 @@ export class Rectangle extends Shape {
 
   getIndex(): number {
     return this.index
+  }
+
+  getPosition(): MouseLocation {
+    return this.mouseLocation
   }
 }
