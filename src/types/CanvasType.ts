@@ -5,7 +5,13 @@ export interface CanvasType {
   state: "Erase" | "DrawRect" | "Line" | "Selection"
 }
 
-export type CanvasAction = "erase" | "draw" | "selection" | "none" | "resize"
+export type CanvasAction =
+  | "erase"
+  | "draw"
+  | "selection"
+  | "none"
+  | "resize"
+  | "display"
 
 interface TypeWarning {
   type: "stroke" | null

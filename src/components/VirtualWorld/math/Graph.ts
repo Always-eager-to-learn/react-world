@@ -31,6 +31,12 @@ export class Graph {
     return false
   }
 
+  removePoint(point: Point) {
+    const segment = this.getSegmentsFromPoint(point)
+    segment.forEach((seg) => this.removeSegment(seg))
+    this.points.splice(this.points.indexOf(point), 1)
+  }
+
   addSegment(seg: Segment) {
     this.segments.push(seg)
   }
@@ -48,13 +54,45 @@ export class Graph {
     return false
   }
 
+  getSegmentsFromPoint(point: Point) {
+    const segs: Segment[] = []
+    this.segments.forEach((seg) => {
+      if (seg.includes(point)) {
+        segs.push(seg)
+      }
+    })
+    return segs
+  }
+
+  removeSegment(seg: Segment) {
+    this.segments.splice(this.segments.indexOf(seg), 1)
+  }
+
   containsSegment(seg: Segment): Segment | undefined {
-    if (seg.point1.equals(seg.point2)) return undefined
+    if (seg.point1.equals(seg.point2)) return seg
     return this.segments.find((segment) => segment.equals(seg))
   }
 
-  returnRandomPoint(): Point {
+  getRandomPoint(): Point {
     const index = Math.floor(Math.random() * this.points.length)
     return this.points[index]
+  }
+
+  getRandomSegment(): Segment {
+    const index = Math.floor(Math.random() * this.segments.length)
+    return this.segments[index]
+  }
+
+  dispose() {
+    this.points.length = 0
+    this.segments.length = 0
+  }
+
+  getPointCount(): number {
+    return this.points.length
+  }
+
+  getSegmentCount(): number {
+    return this.segments.length
   }
 }

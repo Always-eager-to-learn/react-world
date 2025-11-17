@@ -11,8 +11,9 @@ export abstract class Shape {
   static canvasElement: HTMLCanvasElement
   static roughCanvas: RoughCanvas
   static roughgenerator: RoughGenerator
-  static focusedColor: string = "#F79D5C"
-  static withinFocusColor: string = "#9fb3d4"
+  static focusedColor: string = "#d2466b"
+  static withinFocusColor: string = "#4382cb"
+  static selectedColor: string = "#2ecc71"
 
   static setContext(
     ctx: CanvasRenderingContext2D,
@@ -163,4 +164,8 @@ export abstract class Shape {
   ): boolean
   abstract getPosition(): MouseLocation
   abstract setNewCoordinates(mousex: number, mousey: number): void
+  abstract setSelected(): void
+  abstract revertSelected(): void
+  abstract getSelectedStatus(): boolean
+  abstract getCurrentColor(): string
 }

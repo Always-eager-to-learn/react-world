@@ -14,6 +14,7 @@ import rough from "roughjs"
 import { Rectangle } from "./Shapes/Rectangle"
 import { Line } from "./Shapes/Line"
 import { Shape } from "./Shapes/Shape"
+import CanvasActionButton from "./CanvasInput/CanvasActionButtons"
 
 const MainCanvas = () => {
   const startDrawing = throttle(function (
@@ -56,12 +57,26 @@ const MainCanvas = () => {
         if (hoveredElement.current !== null) {
           hoveredElement.current.setOffset(clientX, clientY)
           hoveredElement.current.focusedElement()
+          hoveredElement.current.setSelected()
           if (hoveredElement.current.getPosition() === "inside") {
             setAction("selection")
           } else {
             setAction("resize")
           }
+          if (
+            selectedElements?.getSelectedStatus() &&
+            selectedElements &&
+            selectedElements !== hoveredElement.current
+          ) {
+            selectedElements.revertSelected()
+          }
           setSelectedElements(hoveredElement.current)
+        } else if (hoveredElement.current === null) {
+          if (selectedElements) {
+            selectedElements.revertSelected()
+            setSelectedElements(null)
+            Shape.drawElements(elements)
+          }
         }
         break
       }
@@ -102,6 +117,7 @@ const MainCanvas = () => {
       if (selectedElements) {
         selectedElements.setNewCoordinates(clientX, clientY)
         Shape.drawElements(elements)
+        Shape.setCursor(event, { element: selectedElements })
       }
     } else if (currentState.state === "Selection") {
       const positionElements = Shape.getElementAtPosition(
@@ -114,10 +130,13 @@ const MainCanvas = () => {
         const selectedElement = positionElements.pop()
         Shape.revertHoveredFocusFromElements(positionElements)
         if (selectedElement) {
-          hoveredElement.current = selectedElement
-          selectedElement.hoveredFocus()
           selectedElement.findNearPoint(clientX, clientY)
-          Shape.setCursor(event, { element: selectedElement })
+          hoveredElement.current = selectedElement
+          if (selectedElement !== selectedElements) {
+            selectedElement.hoveredFocus()
+          } else {
+            Shape.setCursor(event, { element: selectedElements })
+          }
         }
         Shape.drawElements(elements)
       } else if (prevLength.current > positionElements.length) {
@@ -136,13 +155,16 @@ const MainCanvas = () => {
     event: React.MouseEvent<HTMLCanvasElement>,
   ) {
     if (action !== "none") {
-      setAction("none")
+      if (currentState.state !== "Selection") {
+        setAction("none")
+      } else {
+        setAction("display")
+      }
       if (selectedElements) {
         event.currentTarget.style.cursor = "default"
         selectedElements.revertFocus()
         Shape.drawElements(elements)
       }
-      setSelectedElements(null)
     } else if (currentState.state === "Selection") {
       Shape.revertHoveredFocusFromElements(elements)
       Shape.drawElements(elements)
@@ -217,7 +239,6 @@ const MainCanvas = () => {
           context.lineCap = "round"
           context.strokeStyle = "#121212"
           context.lineWidth = 5
-          // Shape.drawElements(elements)
         }
       })
     })
@@ -249,27 +270,26 @@ const MainCanvas = () => {
   }, [elements])
 
   return (
-    <main
-      className="grow grid grid-cols-[6fr_1.7fr] overflow-hidden"
-      onKeyDown={selectOption}
-      tabIndex={0}
-    >
+    <main className="grow grid grid-cols-[6fr_1.7fr] overflow-hidden">
       <section>
         <div className="h-full w-full relative" ref={containerElement}>
           <canvas
+            tabIndex={0}
             ref={canvasElement}
             className={`h-full w-full outline-2 outline-[#121212] bg-[#E1E5EE]`}
             onMouseDown={startDrawing}
             onMouseMove={drawing}
             onMouseUp={endDrawing}
             onMouseLeave={endDrawing}
+            onKeyDown={selectOption}
           ></canvas>
-          <section className="fixed bottom-4 left-[30%] translate-x-[50%] bg-[#022F40] p-4 rounded-3xl">
+          <section className="fixed bottom-4 left-[25%] translate-x-[45%] bg-[#022F40] p-4 rounded-3xl">
             <CanvasSelectorButton
               currentState={currentState}
               stateSetterFunction={setState}
             />
           </section>
+          <CanvasActionButton setElements={setElements} />
         </div>
       </section>
       <CanvasAside

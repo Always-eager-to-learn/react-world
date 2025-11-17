@@ -3,33 +3,9 @@ import Header from "../components/Header"
 import { Graph } from "../components/VirtualWorld/math/Graph"
 import { Point } from "../components/VirtualWorld/primitives/Point"
 import { Segment } from "../components/VirtualWorld/primitives/Segment"
+import { GraphEditor } from "../components/VirtualWorld/GraphEditor"
 
 const VirtualWorld = () => {
-  const addPoint = () => {
-    if (graphElements.current && canvasElement.current) {
-      const graph = graphElements.current
-      const success = graph.tryAddPoint(
-        new Point(
-          Math.random() * canvasElement.current.width,
-          Math.random() * canvasElement.current.height,
-        ),
-      )
-      console.log(success)
-      clearDraw()
-    }
-  }
-
-  const addRandomSegment = () => {
-    if (graphElements.current) {
-      const graph = graphElements.current
-      const point1 = graph.returnRandomPoint()
-      const point2 = graph.returnRandomPoint()
-      const result = graph.tryAddSegment(point1, point2)
-      console.log(result)
-      clearDraw()
-    }
-  }
-
   function clearDraw() {
     if (
       canvasContext.current &&
@@ -77,7 +53,17 @@ const VirtualWorld = () => {
         [seg1, seg2, seg3, seg4],
       )
       graphElements.current = graph
-      clearDraw()
+      if (canvasElement.current) {
+        const graphEditor = new GraphEditor(canvasElement.current, graph)
+
+        animate()
+
+        function animate() {
+          clearDraw()
+          graphEditor.display()
+          requestAnimationFrame(animate)
+        }
+      }
     }
   })
 
@@ -86,17 +72,6 @@ const VirtualWorld = () => {
       <Header text="World-Editor" backButton />
       <main className="grow bg-[#1a3144] flex justify-center">
         <canvas className="bg-[#2a5]" ref={canvasElement}></canvas>
-        <section className="fixed right-0 flex flex-col">
-          <button className="bg-[#fafafa] text-[#121212]" onClick={addPoint}>
-            Add random Point
-          </button>
-          <button
-            className="bg-[#fafafa] text-[#121212]"
-            onClick={addRandomSegment}
-          >
-            Add random Segment
-          </button>
-        </section>
       </main>
     </section>
   )
