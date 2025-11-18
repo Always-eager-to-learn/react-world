@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   type CanvasType,
   getCanvasTypes,
@@ -187,16 +187,6 @@ const MainCanvas = () => {
     setWarningMounted(false)
   }
 
-  function selectOption(event: React.KeyboardEvent<HTMLElement>) {
-    if (event.code === "KeyR") {
-      setCurrentState(types.drawRect)
-    } else if (event.code === "KeyS") {
-      setCurrentState(types.select)
-    } else if (event.code === "KeyC") {
-      Shape.clearCanvas(setElements)
-    }
-  }
-
   const [action, setAction] = useState<CanvasAction>("draw")
   const canvasContext = useRef<CanvasRenderingContext2D | null>(null)
   const canvasElement = useRef<HTMLCanvasElement>(null)
@@ -222,6 +212,29 @@ const MainCanvas = () => {
   const jsxElements = messages.map((element) => (
     <p className="max-sm:text-base sm:text-lg">{element}</p>
   ))
+
+  const selectOption = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.shiftKey && event.code === "Delete") {
+        Shape.clearCanvas(setElements)
+      } else {
+        switch (event.code) {
+          case "KeyR": {
+            setCurrentState(types.drawRect)
+            break
+          }
+          case "KeyS": {
+            setCurrentState(types.select)
+            break
+          }
+          case "KeyL": {
+            setCurrentState(types.line)
+          }
+        }
+      }
+    },
+    [types.drawRect, types.select],
+  )
 
   useEffect(() => {
     const canvas = canvasElement.current
@@ -269,6 +282,14 @@ const MainCanvas = () => {
     Shape.drawElements(elements)
   }, [elements])
 
+  useEffect(() => {
+    document.addEventListener("keydown", selectOption)
+
+    return () => {
+      document.removeEventListener("keydown", selectOption)
+    }
+  }, [selectOption])
+
   return (
     <main className="grow grid grid-cols-[6fr_1.7fr] overflow-hidden">
       <section>
@@ -281,23 +302,18 @@ const MainCanvas = () => {
             onMouseMove={drawing}
             onMouseUp={endDrawing}
             onMouseLeave={endDrawing}
-            onKeyDown={selectOption}
           ></canvas>
-          <section className="fixed bottom-4 left-[25%] translate-x-[45%] bg-[#022F40] p-4 rounded-3xl">
-            <CanvasSelectorButton
-              currentState={currentState}
-              stateSetterFunction={setState}
-            />
-          </section>
+          <CanvasSelectorButton
+            currentState={currentState}
+            stateSetterFunction={setState}
+          />
           <CanvasActionButton setElements={setElements} />
         </div>
       </section>
       <CanvasAside
         canvasContext={canvasContext}
-        canvasElement={canvasElement}
         typeOfDrawing={typeOfDraw}
         setTypeOfDrawing={setTypeOfDraw}
-        setElementsOnPage={setElements}
         canvasStroke={canvasColor}
         setCanvasStroke={setCanvasColor}
         canvasStrokeWidth={canvasStroke}

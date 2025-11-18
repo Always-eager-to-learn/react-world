@@ -1,4 +1,4 @@
-import { ChevronLeft, CircleX } from "lucide-react"
+import { ChevronLeft, Download } from "lucide-react"
 import { Link } from "react-router-dom"
 import HeaderInputCanvas from "./CanvasInput/HeaderInputCanvas"
 import { useState, type RefObject } from "react"
@@ -8,10 +8,8 @@ import type { Shape } from "./Shapes/Shape"
 
 interface Props {
   canvasContext: RefObject<CanvasRenderingContext2D | null>
-  canvasElement: RefObject<HTMLCanvasElement | null>
   typeOfDrawing: TypeDraw
   setTypeOfDrawing: (value: TypeDraw) => void
-  setElementsOnPage: (value: Shape[]) => void
   canvasStroke: string
   setCanvasStroke: (val: string) => void
   canvasStrokeWidth: number | string
@@ -23,10 +21,8 @@ interface Props {
 
 const CanvasAside = ({
   canvasContext,
-  canvasElement,
   typeOfDrawing,
   setTypeOfDrawing,
-  setElementsOnPage,
   canvasStroke,
   setCanvasStroke,
   canvasStrokeWidth,
@@ -56,18 +52,6 @@ const CanvasAside = ({
     }
   }
 
-  function clearCanvas() {
-    if (canvasContext.current && canvasElement.current) {
-      canvasContext.current.clearRect(
-        0,
-        0,
-        canvasElement.current.clientWidth,
-        canvasElement.current.clientHeight,
-      )
-      setElementsOnPage([])
-    }
-  }
-
   const [showColor, setShowColor] = useState(false)
 
   return (
@@ -87,12 +71,14 @@ const CanvasAside = ({
           <button
             className={`px-3 py-2.5 outline-2 outline-transparent ${typeOfDrawing === "normal" ? "text-[#121212]" : "text-[#fafafa] active:scale-90 hover:outline-[#fafafa]"} [transition:color_300ms_ease-in-out,scale_250ms_ease-out,oultine-color_350ms_ease-in-out] rounded-full`}
             onClick={() => setTypeOfDrawing("normal")}
+            aria-label="Click to enable drawing with pixel perfect design"
           >
             Pixel Perfect
           </button>
           <button
             className={`px-3 py-2.5 outline-2 outline-transparent ${typeOfDrawing === "rough" ? "text-[#121212]" : "text-[#fafafa] active:scale-90 hover:outline-[#fafafa]"} [transition:color_300ms_ease-in-out,scale_250ms_ease-out,outline-color_350ms_ease-in-out] rounded-full`}
             onClick={() => setTypeOfDrawing("rough")}
+            aria-label="Click to enable drawing with a hand drawn design."
           >
             Hand drawn
           </button>
@@ -106,29 +92,30 @@ const CanvasAside = ({
           className="flex flex-col gap-5 px-4 py-2"
           onSubmit={(e) => e.preventDefault()}
         >
-          <section className="flex flex-col gap-2">
+          <section className="flex gap-3 items-center">
             <label
               htmlFor="color-picker"
               className="text-[#fafafa] font-medium sm:text-lg max-sm:text-base"
             >
-              Color
+              Color:
             </label>
             <button
-              className="w-full h-5 outline-2 outline-[#fafafa] outline-offset-2 rounded-2xl cursor-pointer"
+              className="w-16 h-5 outline-2 outline-[#fafafa] outline-offset-2 rounded-2xl cursor-pointer"
               style={{ backgroundColor: canvasStroke }}
               onClick={() => setShowColor(true)}
             ></button>
           </section>
-          <section className="flex flex-col gap-2">
+          <section className="flex gap-2 items-center">
             <label
               htmlFor="stroke-setter"
               className="text-[#fafafa] font-medium sm:text-lg max-sm:text-base"
             >
-              Stroke
+              Stroke:
             </label>
             <input
               type="number"
-              className="w-full h-7 cursor-text text-[#fafafa] py-5 px-2 text-center sm:text-lg max-sm:text-base outline-2 outline-[#C7CCDB] focus:outline-[#E1E5EE] rounded-full transition-[outline-color] duration-300 ease-in-out"
+              id="stroke-setter"
+              className="w-32 h-7 cursor-text text-[#fafafa] py-5 px-2 text-center sm:text-lg max-sm:text-base outline-2 outline-[#C7CCDB] focus:outline-[#E1E5EE] rounded-full transition-[outline-color] duration-300 ease-in-out"
               inputMode="numeric"
               value={canvasStrokeWidth}
               onChange={setStrokeWidth}
@@ -156,12 +143,9 @@ const CanvasAside = ({
         />
       </section>
       <section className="self-end px-3">
-        <button
-          className="bg-[#D6F7A3] text-[#121212] py-2 px-3.5 rounded-full flex gap-2.5 items-center hover:bg-[#581908] hover:text-[#fafafa] [transition:background-color_350ms_ease-in-out,color_350ms_ease-in-out,scale_250ms_ease-out] active:scale-90"
-          onClick={clearCanvas}
-        >
-          <CircleX className="sm:w-8 sm:h-8 max-sm:w-6 max-sm:h-6" />
-          Clear Canvas (C)
+        <button className="bg-[#D6F7A3] text-[#121212] py-2 px-3.5 rounded-full flex gap-2.5 items-center hover:bg-[#581908] hover:text-[#fafafa] [transition:background-color_350ms_ease-in-out,color_350ms_ease-in-out,scale_250ms_ease-out] active:scale-90">
+          <Download className="sm:w-8 sm:h-8 max-sm:w-6 max-sm:h-6" />
+          Download Frame
         </button>
       </section>
     </aside>
