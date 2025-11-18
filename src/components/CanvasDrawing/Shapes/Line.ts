@@ -30,6 +30,7 @@ export class Line extends Shape {
   start: MouseLocation
   end: MouseLocation
   inside: MouseLocation
+  selected: boolean
 
   constructor(
     x1: number,
@@ -63,15 +64,12 @@ export class Line extends Shape {
     this.start = "start"
     this.end = "end"
     this.inside = "inside"
+    this.selected = false
   }
 
   private createDrawable(): void {
     if (Shape.roughgenerator) {
-      const color = this.focusedState
-        ? Shape.focusedColor
-        : this.hoveredFocusState
-          ? Shape.withinFocusColor
-          : this.strokeColor
+      const color = this.getCurrentColor()
       this.element = Shape.roughgenerator.line(
         this.x1,
         this.y1,
@@ -83,6 +81,17 @@ export class Line extends Shape {
         },
       )
     }
+  }
+
+  getCurrentColor(): string {
+    const color = this.focusedState
+      ? Shape.focusedColor
+      : this.hoveredFocusState
+        ? Shape.withinFocusColor
+        : this.selected
+          ? Shape.selectedColor
+          : this.strokeColor
+    return color
   }
 
   createElement(): void {
@@ -129,11 +138,7 @@ export class Line extends Shape {
       case "normal": {
         if (canvas) {
           const width = getIntFromString(this.strokeWidth)
-          canvas.strokeStyle = this.focusedState
-            ? Shape.focusedColor
-            : this.hoveredFocusState
-              ? Shape.withinFocusColor
-              : this.strokeColor
+          canvas.strokeStyle = this.getCurrentColor()
           canvas.lineWidth = width
           canvas.beginPath()
           canvas.moveTo(this.x1, this.y1)
@@ -254,6 +259,25 @@ export class Line extends Shape {
       }
     }
     this.createDrawable()
+  }
+
+  setSelected(): void {
+    if (!this.selected) {
+      this.selected = true
+      this.hoveredFocusState = false
+      this.createDrawable()
+    }
+  }
+
+  revertSelected(): void {
+    if (this.selected) {
+      this.selected = false
+      this.createDrawable()
+    }
+  }
+
+  getSelectedStatus(): boolean {
+    return this.selected
   }
 
   getIndex(): number {
