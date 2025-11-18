@@ -4,7 +4,6 @@ import HeaderInputCanvas from "./CanvasInput/HeaderInputCanvas"
 import { useState, type RefObject } from "react"
 import type { TypeDraw, WarningCanvas } from "../../types/CanvasType"
 import CanvasColorPicker from "./CanvasInput/CanvasColorPicker"
-import type { Shape } from "./Shapes/Shape"
 
 interface Props {
   canvasContext: RefObject<CanvasRenderingContext2D | null>
